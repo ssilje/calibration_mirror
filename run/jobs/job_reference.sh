@@ -22,14 +22,16 @@ export MPICH_GNI_LMT_PATH=disabled
  ulimit -s unlimited
  ulimit -a
 
+run_dir='/scratch/snx3000/ksilver/calibration/run'
+
 /bin/rm /log/YU*
 
-for f in /scratch/snx3000/ksilver/calibration/run/INPUT_*
+for f in $run_dir/INPUT_*
 do
 ln -s $f .
 done
 
-ln -s /scratch/snx3000/ksilver/calibration/run/cclm .
+ln -s $run_dir/cclm .
 
 # Run CLM in working directory
 srun -u -n 2 cclm
