@@ -6,10 +6,11 @@
 # Written 4/27/15 by Katie Osterried                                         #
 ##############################################################################
 
+run_dir='/scratch/daint/ksilver/calibration/run'
 
 # First, run the reference 
 
-cd /scratch/daint/ksilver/calibration/run/reference
+cd $run_dir/reference
 
 pwd
 sbatch job_run.sh
@@ -19,18 +20,18 @@ sbatch job_run.sh
 min='n'
 max='x'
 
-for param in rl e q u f t ra s
+for param in rl v tk u ra f c tu 
 do
 
 # First the minimum
 
-cd /scratch/daint/ksilver/calibration/run/$param$min
+cd $run_dir/$param$min
 pwd
 sbatch job_run.sh
 
 # Then the maximum
 
-cd /scratch/daint/ksilver/calibration/run/$param$max
+cd $run_dir/$param$max
 pwd
 sbatch job_run.sh
 
@@ -38,10 +39,10 @@ done
 
 # Finally, the two parameter runs
 i1='1'
-for param1 in rl e q u f t ra s
+for param1 in rl v tk u ra f c tu
   do
   i2='1'
-  for param2 in rl e q u f t ra s
+  for param2 in rl v tk u ra f c tu
     do
     if [ "$i1" -lt "$i2" ]
       then
@@ -49,7 +50,7 @@ for param1 in rl e q u f t ra s
       val1=$param1$min
       val2=$param2$min
 
-      cd /scratch/daint/ksilver/calibration/run/${val1}_${val2}
+      cd $run_dir/${val1}_${val2}
       pwd
       sbatch job_run.sh      
 
@@ -57,7 +58,7 @@ for param1 in rl e q u f t ra s
       val1=$param1$min
       val2=$param2$max
 
-      cd /scratch/daint/ksilver/calibration/run/${val1}_${val2}
+      cd $run_dir/${val1}_${val2}
       pwd
       sbatch job_run.sh
 
@@ -65,7 +66,7 @@ for param1 in rl e q u f t ra s
       val1=$param1$max
       val2=$param2$min
 
-      cd /scratch/daint/ksilver/calibration/run/${val1}_${val2}
+      cd $run_dir/${val1}_${val2}
       pwd 
       sbatch job_run.sh
 
@@ -73,7 +74,7 @@ for param1 in rl e q u f t ra s
       val1=$param1$max
       val2=$param2$max
 
-      cd /scratch/daint/ksilver/calibration/run/${val1}_${val2}
+      cd $run_dir/${val1}_${val2}
       pwd
       sbatch job_run.sh
 
