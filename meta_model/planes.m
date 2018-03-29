@@ -68,15 +68,15 @@ obsdata=datamatrix.obsdata;
 %--------------------------------------------------------------------
 % DEFINE Additional needed vectors
 %--------------------------------------------------------------------
+
 prd=([206 81 77]-50)./255;
 pbd=([184 210 237]-100)./255;
 % Hotcold colormap
 hotcold=[linspace(pbd(1),1,100)' linspace(pbd(2),1,100)' linspace(pbd(3),1,100)';...
          linspace(1,prd(1),100)' linspace(1,prd(2),100)' linspace(1,prd(3),100)'];
 
-
 cmin=0.5; % Minimum contourlevel range 
-cmax=0.8; % Minimum contourlevel range 
+cmax=0.75; % Minimum contourlevel range 
 colorsc=linspace(cmin, cmax,200);
 
 acc=20;  % Number of contourlevel intervals
@@ -117,12 +117,7 @@ for i=1:length(pqn)
   for j=1:length(xstarp)
     qfit=neelin_p(metamodel,parameters,datamatrix,xstarp(j,:));
     if strcmp(datamatrix.score,'ps')==1
-      load('/data/dani/calibration/new_stddata')
-      [pi ps]=pscalc(qfit,obsdata,stddata);
-      PStmp(j)=ps;
-    elseif strcmp(datamatrix.score,'psnam')==1
-      load('/home/omarb/CLMEVAL/emulate/NEELIN/calmo/data/stddata_nam')
-      [pi ps]=pscalc(qfit,obsdata,stddata);
+      [pi ps]=pscalc(qfit,obsdata,datamatrix.stddata);
       PStmp(j)=ps;
     end
   end
@@ -137,14 +132,14 @@ for i=1:length(pqn)
   xlabel(parameters(pqn(i,1)).name_tex,'Fontsize',12)
   ylabel(parameters(pqn(i,2)).name_tex,'Fontsize',12)
 
-  colormap(hotcold)
-  caxis([cmin cmax])
+  colormap(hotcold);
+  caxis([cmin cmax]);
 end
-ax=axes('Visible','off')
-cb=colorbar('location','southoutside')
+ax=axes('Visible','off');
+cb=colorbar('location','southoutside');
 zlab = get(cb,'ylabel');
 set(zlab,'String','PS','Fontsize',12); 
-caxis([cmin cmax])
+caxis([cmin cmax]);
 set(ax,'Position',[0.1 0.1 0.8 0.2],'Fontsize',12)
-
-
+set(gcf,'PaperPosition',[1 1 15 8])
+print('-f1','-depsc','planes')

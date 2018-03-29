@@ -1,4 +1,4 @@
-function metamodel=neelin_e(parameters, datamatrix)
+function [metamodel intcontout nointp]=neelin_e(parameters, datamatrix, nl)
 
 % Quadratic regression metamodel as described in Neelin et al. (2010) PNAS
 % NAME 
@@ -62,40 +62,69 @@ function metamodel=neelin_e(parameters, datamatrix)
 N=length(parameters); % Number of model parameters
 refp=parameters(1).default; % Default modelparameters
 range={parameters.range}; % Parameter ranges
+
+dm=2*N; % Number of experiments for one-dimensional quadratic regression
+ds=2*N+N*(N-1)/2; % Number of experiments required to estimate the metamodel
+di=N*(N-1)/2; % Number of all possible pairs
+
 pmatrix=parameters(1).experiments;  % Parameter values 
-sd=size(datamatrix.moddata);
-nd=prod(sd(1:end-1)); % Number of datapoints                                  
-				    
+dmat=datamatrix.moddata;
+
+sd=size(dmat);
+
+% Add zero as the reference
+pmatrix(end+1,:)=zeros(1,N);
+dmat(:,:,:,:,end+1)=zeros(sd(1:end-1));
+
+sd=size(dmat);
+dp=size(pmatrix); % Number of parameter experiments
+nd=prod(sd(1:end-1)); % Number of datapoints 
 
 % Liearize all dimensions 
 refd=datamatrix.refdata(:);
-dvector=reshape(datamatrix.moddata,[prod(sd(1:end-1)),sd(end)]);
+nl=nl(:);
+dvector=reshape(dmat,[prod(sd(1:end-1)),sd(end)]);
 
+%--------------------------------------------------------------------
+% ALLOCATE Output variables
+%--------------------------------------------------------------------
+
+metamodel=NaN;
+dnoint=NaN;
 
 %--------------------------------------------------------------------
 % CHECK Input consistency
 %--------------------------------------------------------------------
 
-dm=2*N;
-ds=2*N+N*(N-1)/2; %Number of experiments required to estimate the metamodel
-di=N*(N-1)/2; %Number of all possible pairs
-dp=size(pmatrix);
-rmsest=false; % Least-square estimation of inter-action terms
-intest=true; % Determination of inter-action terms 
+% Compute index vector for all possible pairs
+pqn=allcomb(1:N,1:N);
+cnt=1;
+for i=1:length(pqn)
+  if pqn(i,1)>=pqn(i,2)
+   cind(cnt)=i;
+   cnt=cnt+1;
+  end
+end
+pqn(cind,:)=[];
 
+% Construct Neelin Model for polyfitn
+modelterms=zeros(ds+1,N);
+modelterms(1:N,1:N)=eye(N,N);
+modelterms(N+1:2*N,1:N)=eye(N,N)*2;
+
+ii1=sub2ind(size(modelterms),2*N+1:ds,pqn(:,1)');
+ii2=sub2ind(size(modelterms),2*N+1:ds,pqn(:,2)');
+modelterms(ii1)=1; modelterms(ii2)=1;
 
 if dp(2)~=N
   error('Dimension of pmatrix does not correspond to number of parameters')
 elseif dp(1)<dm
   error('Linear set of equations is underdetermined, parameter matrix too short')
 elseif dp(1)>=dm && dp(1)<ds
-  display(['Not enough experiments specified, interaction parameters' ...
-	   'not determined'])
-  intest=false;
+  display(['Not enough experiments specified, interaction parameters not determined'])
 elseif dp(1)>ds
   display(['Linear system of equations overdetermined, addtional experiments'...
-           'used to constrain interaction terms using least-squares'])
- rmsest=true;
+           'used to constrain interaction terms unsing least-squares'])
 end
 
 % Check if default value is in the center of the parameter ranges
@@ -124,133 +153,26 @@ end
 pmatrix=roundn((pmatrix-repmat(refp,[dp(1),1]))./repmat(varp,[dp(1),1]),-3);
 dvector=dvector-repmat(refd,[1,sd(end)]);
 
-
-%--------------------------------------------------------------------
-% ALLOCATE Output variables
-%--------------------------------------------------------------------
-
-a=zeros(nd,N,1); B=zeros(nd,N,N);
-
-%--------------------------------------------------------------------
-% DEFINE Additional needed vectors
-%--------------------------------------------------------------------
-
-% Compute index vector for all possible pairs
-pqn=allcomb(1:N,1:N);
-cnt=1;
-for i=1:length(pqn)
-  if pqn(i,1)>=pqn(i,2)
-   cind(cnt)=i;
-   cnt=cnt+1;
-  end
-end
-pqn(cind,:)=[];
-
 %--------------------------------------------------------------------
 % DETERMINE PARAMETERS FOR MULTIVARIATE QUADRATIC MODEL
 %--------------------------------------------------------------------
 
+a=zeros(nd,N,1); B=zeros(nd,N,N); c=zeros(nd,1,1);
+metamodel=struct;
+
 for i=1:nd % Estimate metamodel for each datapoint
-  for n=1:N % Loop over number of parameters
-    ne=1+(n-1)*2; %Index of single parameter experiments 
-    xv=[pmatrix(ne,n),0,pmatrix(ne+1,n)];
-    yv=[dvector(i,ne),0,dvector(i,ne+1)];
-    if lwb(n)
-      xv=[0,pmatrix(ne,n),pmatrix(ne+1,n)];
-      yv=[0,dvector(i,ne),dvector(i,ne+1)];
-    end
-    if upb(n)
-      xv=[pmatrix(ne,n),pmatrix(ne+1,n),0];
-      yv=[dvector(i,ne),dvector(i,ne+1),0];
-    end
-    abtemp=polyfit(xv,yv,2); % Second order polynomial regression
-    a(i,n)=abtemp(2); %Write into output variables
-    B(i,n,n)=abtemp(1);
+  metamodel.fit{i}=polyfitn(pmatrix,dvector(i,:),modelterms);
+  a(i,:,1)=metamodel.fit{i}.Coefficients(1:N);
+  B(i,:,:)=diag(metamodel.fit{i}.Coefficients(N+1:2*N));
+  for j=1:di
+    B(i,pqn(j,1),pqn(j,2))=metamodel.fit{i}.Coefficients(dm+j);
   end
-  
-  % Estimate interaction terms
-  if intest
-    for n=1:di % Loop over all possible combinations of pairs
-      i1=pqn(n,1); i2=pqn(n,2); ne=n+2*N; % Indices of parameters for interactions
-	intcont=(dvector(i,ne) ...
-            ... % Substract linear contribution ...
-        -a(i,i1)*pmatrix(ne,i1)-a(i,i2)*pmatrix(ne,i2) ...
-            ... % Substract quadratic contribution
-        -B(i,i1,i1)*pmatrix(ne,i1).^2-B(i,i2,i2)*pmatrix(ne,i2).^2);
-	intcont=dvector(i,ne)-dvector(i,(i1-1)*2+1)-dvector(i,(i2-1)*2+1);
-	B(i,i1,i2)=intcont/(2*pmatrix(ne,i1)*pmatrix(ne,i2));
-    end
-  end
-  
-  % Use additional simulations to constrain interaction parameters
-  % using a least square minimization
-end
+  c(i,1,1)=metamodel.fit{i}.Coefficients(end);
+end 
 
-if rmsest
-  intind=pmatrix./pmatrix;
-  rgv=[100,2];
-  for k=1:length(rgv) % Loops of error reduction
-    for n=1:di % Number of interactions
-      i1=pqn(n,1); i2=pqn(n,2); ne=n+2*N; rg=rgv(k);acc=500; 
-      % Indices of parameters for interactions
-      % Search for interaction experiments
-      expi=find(sum(intind(:,[pqn(n,1),pqn(n,2)]),2)==2);  
-      % Create a vector of interaction parameters with space rg and
-      % acuracy acc centered around the original estimated
-      % interaction term
-      
-      if nd>1
-	for p=1:nd
-	  bint(p,:)=linspace(B(p,i1,i2)-rg*B(p,i1,i2),B(p,i1,i2)+rg*B(p,i1,i2),acc);
-	end
-      else
-	bint=linspace(B(i1,i2)-rg*B(i1,i2),B(i1,i2)+rg*B(i1,i2),acc);
-      end
-      for j=1:length(expi)
-	for i=1:acc
-	  Btmp=B;
-	  x=reshape(pmatrix(expi(j),:),[1 N]);
-	  xa=squeeze(repmat(x,[nd 1]));
-	  xh1=reshape(pmatrix(expi(j),:),[1 1 N]);
-	  xh2=reshape(pmatrix(expi(j),:),[1 N 1]);
-	  xb1=squeeze(repmat(xh1,[nd,N,1]));
-	  xb2=squeeze(repmat(xh2,[nd,1,N]));
-	  xb1(:,i1,i1)=pmatrix(expi(j),i1);xb1(:,i2,i2)=pmatrix(expi(j),i2);
-          xb2(:,i1,i1)=pmatrix(expi(j),i1);xb2(:,i2,i2)=pmatrix(expi(j),i2);
-	  if nd>1
-	    Btmp(:,i1,i2)=bint(:,i); Btmp(:,i2,i1)=bint(:,i);            
-	    dtmp(i,j,:)=sum(xa'.*a')+sum(sum(xb2.*xb1.*Btmp,3),2)';
-	  end
-	end
-	 if nd>1
-	   dcmp(j,:)=dvector(:,expi(j));
-	 else 
-	   dcmp(j)=dvector(expi(j));
-	 end
-      end 
-      display(['Use least-square esitmation for interaction parameter' ...
-	       ' B' num2str(pqn(n,1)) num2str(pqn(n,2))]);
-      if nd>1
-	[m im]=min(squeeze(sum((dtmp-repmat(reshape(dcmp,[1 ...
-		    size(dcmp)]),[acc,1,1])).^2,2)));
-	[mo imo]=min(squeeze((dtmp-repmat(reshape(dcmp,[1 ...
-                    size(dcmp)]),[acc,1,1])).^2));
-	imo=squeeze(imo);
-	size(imo);
-	vsum(k,n)=mean(var(imo));
-	for p=1:nd
-	  B(p,i1,i2)=bint(p,im(p)); % B(p,i2,i1)=bint(p,im(p));
-	end
-      else
-      end
-    end % for n
-  end % for k
-end % if rmest
-
-% reshape a and B to original data structure
-a=reshape(a,[sd(1:end-1),N]);B=reshape(B,[sd(1:end-1),N,N]);
-
-metamodel.a=a; metamodel.B=B;
+metamodel.a=reshape(a,[sd(1:end-1),N]);
+metamodel.B=reshape(B,[sd(1:end-1),N,N]);
+metamodel.c=reshape(c,[sd(1:end-1)]);
 
 
 

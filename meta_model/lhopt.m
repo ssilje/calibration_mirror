@@ -53,8 +53,6 @@ function [PSopt xstar xopt]=lhopt(metamodel,parameters,datamatrix,lhacc)
 % READ Input values from structures
 %--------------------------------------------------------------------
 
-a=metamodel.a;
-B=metamodel.B;
 N=length(parameters); % Number of model parameters
 refp=parameters(1).default; % Default modelparameters
 range={parameters.range}; % Parameter ranges
@@ -62,6 +60,7 @@ refd=datamatrix.refdata; % Reference data
 sd=size(datamatrix.refdata);
 pmatrix=parameters(1).experiments;
 obsdata=datamatrix.obsdata;
+stddata=datamatrix.stddata;
 
 %--------------------------------------------------------------------
 % CREATE Latin Hypercube design
@@ -89,11 +88,6 @@ st=1000;
 for p=1:length(xstar)
     qfit=neelin_p(metamodel,parameters,datamatrix,xstar(p,:));
     if strcmp(datamatrix.score,'ps')==1
-      load('/data/dani/calibration/new_stddata')
-      [dum ps]=pscalc_3var(qfit,obsdata,stddata);
-      PSopt(p)=ps;
-    elseif strcmp(datamatrix.score,'psnam')==1
-      load('/home/omarb/CLMEVAL/emulate/NEELIN/calmo/data/stddata_nam')
       [dum ps]=pscalc(qfit,obsdata,stddata);
       PSopt(p)=ps;
     end
@@ -117,4 +111,4 @@ end
 
 xopt=xstar(find(PSopt==max(PSopt)),:);
 
-
+save('data/all_data_mult')

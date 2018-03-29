@@ -46,6 +46,10 @@ indvar=datamatrix.variables{1};
 refd=datamatrix.refdata;
 sr=size(refd);
 
+if ~exist('noplot','var')
+  noplot=false
+end
+
 %--------------------------------------------------------------------
 % COMPUTE Data for each parameter experiment
 %--------------------------------------------------------------------
@@ -60,17 +64,18 @@ else
   indd=':';
 end
 
-predval=NaN([size(datamatrix.refdata),length(pmatrix)]); % Allocate data
+predval=NaN([size(datamatrix.refdata),size(pmatrix,1)]); % Allocate data
 
-for i=1:length(pmatrix)
-  predval(indd{:},i)=neelin_p(metamodel,parameters,datamatrix,pmatrix(i,:));
+for i=1:size(pmatrix,1)
+  predval(indd{:},i)=neelin_p(metamodel,parameters,datamatrix,pmatrix(i,:)); 
 end
-    	
-errpred=predval-datamatrix.valdata;
 
+errpred=squeeze(predval)-datamatrix.valdata;
+noplot=true
+if (noplot)
 figure;
 for i=1:numvar
-  mysubplot(1,numvar,i)
+  subplot(1,numvar,i)
   indd{indvar}=i;
   tmpr=datamatrix.obsdata(indd{:});
   tmps=squeeze(datamatrix.valdata(indd{:},:))-repmat(tmpr,[size(tmpr)./size(tmpr) 10]);
@@ -93,13 +98,15 @@ for i=1:numvar
   plot(smooth(hs,10)*scalef+lwb,xs,'k','Linewidth',1.5)
   plot(xp,smooth(hp,10)*scalef+lwb,'k','Linewidth',1.5)
   rstat=regstats(tmps(:),tmpp(:));
-  if i==1
-    hl=legend([fiv(1),hr],['95% range'],['R^2=' num2str(roundn(rstat.rsquare,-2))],2);
-    set(hl,'Box','off')
-  else
-    hl=legend([hr],['R^2=' num2str(roundn(rstat.rsquare,-2))],2);
-    set(hl,'Box','off')
-  end
+  title(['R^2=' num2str(roundn(rstat.rsquare,-2))],'Fontsize',14)
+%  if i==1
+%    hl=legend([fiv(1),hr],['95% range'],['R^2=' num2str(roundn(rstat.rsquare,-2))],2);
+%    set(hl,'Box','off')
+%  else
+%    hl=legend([hr],['R^2=' num2str(roundn(rstat.rsquare,-2))],2);
+%    set(hl,'Box','off')
+%  end
+end
 end
 
 
@@ -110,27 +117,27 @@ errstd=nanstd(errpred,0,length(sd)); %Standard error
 % simulation and computing multiple times the effect on the
 % model score
 
-nsam=1000; % Number of samples drawn
+%nsam=1000; % Number of samples drawn
 
-if isfield(datamatrix,'score')
-   sampref=repmat(refd,[sr./sr nsam]);
-   linsamp=reshape(sampref,[nd nsam]);
-   linerr=reshape(errstd,[1 nd]);
-   for n=1:nd
-       linsamp(n,:)=linsamp(n,:)+normrnd(0,linerr(n),1,nsam);
-   end
-   sampref=reshape(linsamp,[sr nsam]);
-   if strcmp(datamatrix.score,'ps')
-     load('/home/omarb/CLMEVAL/emulate/NEELIN/calmo/data/stddata')
-     [pi ps]=pscalc(sampref,datamatrix.obsdata,stddata);
-   elseif strcmp(datamatrix.score,'psnam')
-     load('/home/omarb/CLMEVAL/emulate/NEELIN/calmo/data/stddata_nam')
-     [pi ps]=pscalc(sampref,datamatrix.obsdata,stddata);
-   end
-   errps=std(ps);
-else
-  errps=NaN;
-end
+%if isfield(datamatrix,'score')
+%   sampref=repmat(refd,[sr./sr nsam]);
+%   linsamp=reshape(sampref,[nd nsam]);
+%   linerr=reshape(errstd,[1 nd]);
+%   for n=1:nd
+%       linsamp(n,:)=linsamp(n,:)+normrnd(0,linerr(n),1,nsam);
+%   end
+%   sampref=reshape(linsamp,[sr nsam]);
+%   if strcmp(datamatrix.score,'ps')
+%     load('/home/omarb/CLMEVAL/emulate/NEELIN/calmo/data/stddata')
+%     [pi ps]=pscalc(sampref,datamatrix.obsdata,stddata);
+%   elseif strcmp(datamatrix.score,'psnam')
+%     load('/home/omarb/CLMEVAL/emulate/NEELIN/calmo/data/stddata_nam')
+%     [pi ps]=pscalc(sampref,datamatrix.obsdata,stddata);
+%   end
+%   errps=std(ps);
+%else
+%  errps=NaN;
+%end
 
 
 

@@ -52,6 +52,7 @@ function [dmatrix]=neelin_p(metamodel,parameters,datamatrix,pvector)
 
 a=metamodel.a;
 B=metamodel.B;
+c=metamodel.c;
 N=length(parameters); % Number of model parameters
 refp=parameters(1).default; % Default modelparameters
 range={parameters.range}; % Parameter ranges
@@ -107,7 +108,6 @@ end
 indent=1.5;
 pvector=roundn((pvector-refp)./varp,-3);;
 
-
 %--------------------------------------------------------------------
 % ALLOCATE Output variables
 %--------------------------------------------------------------------
@@ -120,8 +120,6 @@ dmatrix=NaN(dd);
 
 x=reshape(pvector,[dd./dd N]);
 xa=squeeze(repmat(x,[dd 1]));
-xi=x;xi(x~=0)=1;
-xc=squeeze(repmat(xi,[dd 1]));
 xh1=reshape(pvector,[dd./dd 1 N]);
 xh2=reshape(pvector,[dd./dd N 1]);
 xb1=squeeze(repmat(xh1,[dd,N,1]));
@@ -137,19 +135,10 @@ end
 % direct computation of dmatrix with no loop 
 % (works only because B is symetric!)
 
-
-if isfield(metamodel,'c') % Check if constant term present, only if
-                         % neelin_c used to additionally constrain a,B
-  c=metamodel.c;
-  
-else
-  c=zeros(size(a));
-end
-
 if ndims(a)==2
-  dmatrix=sum(xa.*a,nda)+sum(sum(xb2.*(xb1.*B),ndb),nda)+sum(xc.*c,nda)+refd; 
+  dmatrix=sum(xa.*a,nda)+sum(sum(xb2.*(xb1.*B),ndb),nda)+c+refd; 
 else
-  dmatrix=sum(xa.*a,nda)+sum(sum(xb2.*(xb1.*B),ndb),nda)+sum(xc.*c,nda)+refd; 
+  dmatrix=sum(xa.*a,nda)+sum(sum(xb2.*(xb1.*B),ndb),nda)+c+refd; 
 end
 
   

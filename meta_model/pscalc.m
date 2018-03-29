@@ -79,10 +79,10 @@ end
 %--------------------------------------------------------------------
 % Compute erformance index
 err=moddata-obsdata;
-pi=((moddata-obsdata)./stddata).^2;
+pi=(err.^2./stddata.^2);
 
-%varweight=squeeze(mean(mean(mean(pi,1),2),3)./sum(mean(mean(mean(pi,1),2),3)))*100;
-%egweight=squeeze(mean(mean(mean(pi,1),2),4)./sum(mean(mean(mean(pi,1),2),4)))*100;
+varweight=squeeze(nanmean(nanmean(nanmean(pi,1),2),3)./sum(nanmean(nanmean(nanmean(pi,1),2),3)))*100;
+regweight=squeeze(nanmean(nanmean(nanmean(pi,1),2),4)./sum(nanmean(nanmean(nanmean(pi,1),2),4)))*100;
 
 % Compute performance score
 if numsim>1

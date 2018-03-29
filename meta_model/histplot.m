@@ -27,19 +27,22 @@ function histplot(lhscore,datamatrix)
 %--------------------------------------------------------------------
 
 obsdata=datamatrix.obsdata;
+stddata=datamatrix.stddata;
 refd=datamatrix.refdata; % Reference data
-
+optd=datamatrix.optdata;
 
 %--------------------------------------------------------------------
 % DETERMINE/COMPUTE Score of the reference simulation
 %--------------------------------------------------------------------
 
 if datamatrix.score
-  load('/data/dani/calibration/new_stddata')
   [pi PSref]=pscalc(refd,obsdata,stddata);
+  [pi PSopt]=pscalc(optd,obsdata,stddata);
 else
   PSref=refd;
 end
+
+
 
 %--------------------------------------------------------------------
 % DEFINE Additional needed vectors
@@ -57,23 +60,25 @@ pb=([184 210 237])./255;
 figure;
 [hi hx]=hist(lhscore,200);
 hi=hi/sum(hi);
-fhy=[hi,zeros(1,length(hi))]
-fhx=[hx,flipdim(hx,2)]
+fhy=[hi,zeros(1,length(hi))];
+fhx=[hx,flipdim(hx,2)];
 hhi=fill(fhx,fhy,pb, 'EdgeColor',pb,'Linewidth',2);
 hold on
 lht=max(hi);
-href=plot(ones(1,100)*PSref,linspace(0,lht,100),'Linewidth',2,'color','k')
+href=plot(ones(1,100)*PSref,linspace(0,lht,100),'Linewidth',2,'color','k');
 text(PSref,lht+0.0005,'REF','Rotation',90,'Fontsize',12);
-
+hopt=plot(ones(1,100)*PSopt,linspace(0,lht,100),'Linewidth',2,'color','r');
+text(PSopt,lht+0.0005,'OPT','Rotation',90,'Fontsize',12);
 set(gca,'Fontsize',18,'YTick',[],'Layer','top','Box','on','TickDir','in', 'Linewidth',1)
-ylabel('Relavtive densitiy','Fontsize',18)
+ylabel('Relative densitiy','Fontsize',18)
 xlabel('Score','Fontsize',18)
 title('Objective calibration','Fontsize',18)
 ylim([0 lht+.004])
 xlim([0 1])
-hl=legend([href,hhi],'Rerefence','Metamodel Range',2)    
-set(hl,'Box','off')
-set(gcf,'Paperposition',[1 1 20 5])
+%hl=legend([href,hhi],'Rerefence','Metamodel Range',2)    
+%set(hl,'Box','off')
+set(gcf,'Paperposition',[1 1 10 3])
 set(gcf, 'Renderer', 'painters')
+print('-f1','-depsc','histplot')
 
 
