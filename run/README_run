@@ -8,14 +8,14 @@
 Steps for setting up and running the calibration:
 
 1. First, prepare the INPUT_ORG_reference and INPUT_IO_reference
-   files located in: ~/calibration/input/INPUT_ORG,
-   and ~/calibration/input/INPUT_IO.  
+   files located in: ~/calibration/run/input/INPUT_ORG,
+   and ~/calibration/run/input/INPUT_IO.  
 
 2. Then, change the minima and maxima for the parameters in the generate_input.sh script
-   if needed (found in ~/calibration/input)
+   if needed (found in ~/calibration/run/input)
 
-3. Clean out the ~/calibration/input/INPUT_ORG, 
-   and ~/calibration/input/INPUT_IO folders.  !! Don't delete the reference files!!
+3. Clean out the ~/calibration/run/input/INPUT_ORG, 
+   and ~/calibration/run/input/INPUT_IO folders.  !! Don't delete the reference files!!
 
 4. Run the generate_input.sh script to make all of the INPUT_ORG, 
    and INPUT_IO files.
@@ -25,7 +25,7 @@ Steps for setting up and running the calibration:
 
 6. Clean out anything that is in the $run_dir folder.
 
-7. Change the job_reference.sh script if needed (found in ~/calibration/jobs)
+7. Change the job_reference.sh script if needed (found in ~/calibration/run/jobs)
 
 8. Run the prepare_jobs.sh script to generate the run folders and copy the variable
    input files to the run folders.  
@@ -35,7 +35,7 @@ Steps for setting up and running the calibration:
 10. Copy the cclm executable to the $run_dir folder.  
 
 11. Use the run_calibration.sh script to submit all of the Slurm batch jobs 
-    (found in ~/calibration)  
+    (found in ~/calibration/run)  This will submit all the jobs at once!  
 
 
 
