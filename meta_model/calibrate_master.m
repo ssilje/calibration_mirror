@@ -87,7 +87,7 @@ datamatrix.variables={4,'T2M [K]','PR [mm/day]','CLCT [%]'};
 % FIT METAMODEL
 %-----------------------------------------------------------------
 
-metamodel=neelin_e(parameters,datamatrix,iv);
+metamodel=neelin_e_analytic(parameters,datamatrix,iv);
 
 %-----------------------------------------------------------------
 % VALIDATION METRICS
@@ -109,7 +109,7 @@ metaparam(metamodel,parameters,datamatrix);
 % (3) Visualize performance landscape for each parameter pair
 %     between all experiments
  
-% planes(metamodel,parameters,datamatrix)
+planes(metamodel,parameters,datamatrix)
  
 %-----------------------------------------------------------------
 % OPTIMIZATION OF PARAMETERS
@@ -129,42 +129,18 @@ lhacc=3000000; % Number of experiments to sample parameter space, for
 % lhexp: Latin hypercube parameter experiments
 % popt: Parameter setting with highest score
 
-%[lhscore lhexp popt]=lhopt(metamodel,parameters,datamatrix,lhacc);
+[lhscore lhexp popt]=lhopt(metamodel,parameters,datamatrix,lhacc);
 
 % (2) Plot performance range covered  by the metamodel and compare to
 % reference simulation
 
-%histplot(lhscore,datamatrix)
+histplot(lhscore,datamatrix)
  
 % (3) Plot optimised parameter distributions
 errm=0.015 % Uncertainty of the metamodel, is currently set from
           % experience, needs to be computed from error of
           % independent simulations
  
-%optparam(parameters,lhscore,lhexp,popt,errm)
+optparam(parameters,lhscore,lhexp,popt,errm)
 
-% Select 5 parameter sets with maximum Euclidean distance 
-% within estimated uncertainty of the metamodel (errm)
-
-%xstarh = lhexp(find(lhscore>max(lhscore)-errm),:);
-%
-%deuc=@(x1,x2,s) sqrt(sum((x1-x2).^2./repmat(s,[size(x1,1) 1]),2))
-%
-%s=var(xstarh);%variance of sample data
-%
-%for j=1:1
-%s5=randi([1 length(xstarh)],5,1000000);%select randomly 5
-%                                         %simulations many times
-%cd=[1 2; 1 3; 1 4; 1 5; 2 3; 2 4; 2 5; 3 4; 3 5; 4 5] %combination matrix of all pairs for 5 samples
-%
-%for i=1:length(cd)
-%  ds5(i,:)=deuc(xstarh(s5(cd(i,1),:),:),xstarh(s5(cd(i,2),:),:),s);
-%end
-%
-%totds5=sum(ds5,1);
-%exs(j,1)=max(totds5);
-%exs(j,2:6)=s5(:,find(totds5==max(totds5)));
-%xstarh(exs(2:6),:)
-%end    
-%
-%save('data/calibration_XXXXX') 
+save('data/calibration_XXXXX') 
