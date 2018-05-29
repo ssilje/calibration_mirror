@@ -14,16 +14,16 @@ rlam_heatx=2.0
 v0snown=10.0
 v0snowx=30.0
 tkhminn=0.1
-tkhminx=1.0
+tkhminx=2.0
 uc1n=0.0
-uc1x=0.6
+uc1x=1.6
 radfacn=0.3
 radfacx=0.9
 fac_rootdp2n=0.5
 fac_rootdp2x=1.5
 cgamman=0.1
 cgammax=4.0
-tur_lenn=20.0
+tur_lenn=60.0
 tur_lenx=1000.0
 
 # Now, set the abbreviations
@@ -52,6 +52,9 @@ do
     cp INPUT_ORG/INPUT_ORG_reference INPUT_ORG/INPUT_ORG_${!abbrev}n
     val=$param$min
     sed -i "s/.*$param.*/    $param = ${!val},/" INPUT_ORG/INPUT_ORG_${!abbrev}n 
+    if [ "$param" == "tkhmin" ] ; then
+       sed -i "s/.*tkmmin.*/    tkmmin = ${!val},/" INPUT_ORG/INPUT_ORG_${!abbrev}n  
+    fi
 
     cp INPUT_IO/INPUT_IO_reference INPUT_IO/INPUT_IO_${!abbrev}n
     sed -i "s/reference/${!abbrev}n/g" INPUT_IO/INPUT_IO_${!abbrev}n
@@ -60,6 +63,9 @@ do
     cp INPUT_ORG/INPUT_ORG_reference INPUT_ORG/INPUT_ORG_${!abbrev}x
     val=$param$max
     sed -i "s/.*$param.*/    $param = ${!val},/" INPUT_ORG/INPUT_ORG_${!abbrev}x 
+    if [ "$param" == "tkhmin" ] ; then
+       sed -i "s/.*tkmmin.*/    tkmmin = ${!val},/" INPUT_ORG/INPUT_ORG_${!abbrev}x  
+    fi
 
     cp INPUT_IO/INPUT_IO_reference INPUT_IO/INPUT_IO_${!abbrev}x
     sed -i "s/reference/${!abbrev}x/g" INPUT_IO/INPUT_IO_${!abbrev}x
@@ -87,6 +93,11 @@ do
    cp INPUT_ORG/INPUT_ORG_reference INPUT_ORG/INPUT_ORG_${!abbrev1}n_${!abbrev2}n
    sed -i "s/.*$param1.*/    $param1 = ${!val1},/" INPUT_ORG/INPUT_ORG_${!abbrev1}n_${!abbrev2}n
    sed -i "s/.*$param2.*/    $param2 = ${!val2},/" INPUT_ORG/INPUT_ORG_${!abbrev1}n_${!abbrev2}n
+   if [ "$param1" == "tkhmin" ] ; then
+     sed -i "s/.*tkmmin.*/    tkmmin = ${!val1},/" INPUT_ORG/INPUT_ORG_${!abbrev1}n_${!abbrev2}n
+   elif [ "$param2" == "tkhmin" ]
+     sed -i "s/.*tkmmin.*/    tkmmin = ${!val2},/" INPUT_ORG/INPUT_ORG_${!abbrev1}n_${!abbrev2}n
+   fi
 
    cp INPUT_IO/INPUT_IO_reference INPUT_IO/INPUT_IO_${!abbrev1}n_${!abbrev2}n
    sed -i "s/reference/${!abbrev1}n_${!abbrev2}n/g" INPUT_IO/INPUT_IO_${!abbrev1}n_${!abbrev2}n  
@@ -98,6 +109,11 @@ do
    cp INPUT_ORG/INPUT_ORG_reference INPUT_ORG/INPUT_ORG_${!abbrev1}n_${!abbrev2}x
    sed -i "s/.*$param1.*/    $param1 = ${!val1},/" INPUT_ORG/INPUT_ORG_${!abbrev1}n_${!abbrev2}x
    sed -i "s/.*$param2.*/    $param2 = ${!val2},/" INPUT_ORG/INPUT_ORG_${!abbrev1}n_${!abbrev2}x
+   if [ "$param1" == "tkhmin" ] ; then
+     sed -i "s/.*tkmmin.*/    tkmmin = ${!val1},/" INPUT_ORG/INPUT_ORG_${!abbrev1}n_${!abbrev2}x
+   elif [ "$param2" == "tkhmin" ]
+     sed -i "s/.*tkmmin.*/    tkmmin = ${!val2},/" INPUT_ORG/INPUT_ORG_${!abbrev1}n_${!abbrev2}x
+   fi
 
    cp INPUT_IO/INPUT_IO_reference INPUT_IO/INPUT_IO_${!abbrev1}n_${!abbrev2}x
    sed -i "s/reference/${!abbrev1}n_${!abbrev2}x/g" INPUT_IO/INPUT_IO_${!abbrev1}n_${!abbrev2}x
@@ -109,6 +125,11 @@ do
    cp INPUT_ORG/INPUT_ORG_reference INPUT_ORG/INPUT_ORG_${!abbrev1}x_${!abbrev2}n
    sed -i "s/.*$param1.*/    $param1 = ${!val1},/" INPUT_ORG/INPUT_ORG_${!abbrev1}x_${!abbrev2}n
    sed -i "s/.*$param2.*/    $param2 = ${!val2},/" INPUT_ORG/INPUT_ORG_${!abbrev1}x_${!abbrev2}n
+   if [ "$param1" == "tkhmin" ] ; then
+     sed -i "s/.*tkmmin.*/    tkmmin = ${!val1},/" INPUT_ORG/INPUT_ORG_${!abbrev1}x_${!abbrev2}n
+   elif [ "$param2" == "tkhmin" ]
+     sed -i "s/.*tkmmin.*/    tkmmin = ${!val2},/" INPUT_ORG/INPUT_ORG_${!abbrev1}x_${!abbrev2}n
+   fi
 
    cp INPUT_IO/INPUT_IO_reference INPUT_IO/INPUT_IO_${!abbrev1}x_${!abbrev2}n
    sed -i "s/reference/${!abbrev1}x_${!abbrev2}n/g" INPUT_IO/INPUT_IO_${!abbrev1}x_${!abbrev2}n
@@ -120,6 +141,11 @@ do
 
    sed -i "s/.*$param1.*/    $param1 = ${!val1},/" INPUT_ORG/INPUT_ORG_${!abbrev1}x_${!abbrev2}x
    sed -i "s/.*$param2.*/    $param2 = ${!val2},/" INPUT_ORG/INPUT_ORG_${!abbrev1}x_${!abbrev2}x
+   if [ "$param1" == "tkhmin" ] ; then
+     sed -i "s/.*tkmmin.*/    tkmmin = ${!val1},/" INPUT_ORG/INPUT_ORG_${!abbrev1}x_${!abbrev2}x
+   elif [ "$param2" == "tkhmin" ]
+     sed -i "s/.*tkmmin.*/    tkmmin = ${!val2},/" INPUT_ORG/INPUT_ORG_${!abbrev1}x_${!abbrev2}x
+   fi
 
    cp INPUT_IO/INPUT_IO_reference INPUT_IO/INPUT_IO_${!abbrev1}x_${!abbrev2}x
    sed -i "s/reference/${!abbrev1}x_${!abbrev2}x/g" INPUT_IO/INPUT_IO_${!abbrev1}x_${!abbrev2}x
