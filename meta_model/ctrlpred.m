@@ -32,7 +32,7 @@ function errpred=ctrlpred(metamodel,parameters,datamatrix)
 
 N=length(parameters)
 ds=2*N+N*(N-1)/2; % Number of fitted simulations in determined design
-pmatrix=parameters(1).experiments(1:ds,:)
+pmatrix=parameters(1).experiments(1:ds,:);
 
 %--------------------------------------------------------------------
 % COMPUTE Data for each parameter experiment

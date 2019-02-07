@@ -1,4 +1,4 @@
-function [metamodel intcontout nointp]=neelin_e(parameters, datamatrix, nl)
+function [metamodel intcontout nointp]=neelin_e_analytic(parameters, datamatrix, nl)
 
 % Quadratic regression metamodel as described in Neelin et al. (2010) PNAS
 % NAME 
@@ -87,7 +87,7 @@ dm=2*N;
 ds=2*N+N*(N-1)/2; %Number of experiments required to estimate the metamodel
 di=N*(N-1)/2; %Number of all possible pairs
 dp=size(pmatrix);
-rmsest=false; % Least-square estimation of inter-action terms
+rmsest=true; % Least-square estimation of inter-action terms
 intest=true; % Determination of inter-action terms 
 
 
@@ -120,6 +120,7 @@ display(['Default of parameter ' parameters(i).name ...
              ' is taken at the upper bound'])
   end
 end
+
 
 % Normalize parameter values by the total range and center around
 % default value
@@ -177,22 +178,37 @@ for i=1:nd % Estimate metamodel for each datapoint
   end
   
   % Estimate interaction terms
+
   if intest
     for n=1:di % Loop over all possible combinations of pairs
-      i1=pqn(n,1); i2=pqn(n,2); ne=n+2*N; % Indices of parameters for interactions
-	intcont=dvector(i,ne)-dvector(i,(i1-1)*2+1)-dvector(i,(i2-1)*2+1);
+      i1=pqn(n,1); i2=pqn(n,2); 
+       
+      %ne=n+2*N; % Indices of parameters for interactions. This is what Omar used, but with this indexing, ... 
+       % an interaction term from each parameter is not included, but only
+       % the interactions with the first parameter
+       % I got Nans (since the indexing gave some parameter interaction where it was zero)
+       
+       %Below you can chose which parameter combination you will include. I
+       %have used the max/max
+       
+      ne=2*N+(n-1)*4+4; % Maximum / Maximum
+      % ne=2*N+(n-1)*4+1;% Minimum / Minimum
+      %ne=2*N+(n-1)*4+2;% Minimum / Maximum  
+      %ne=2*N+(n-1)*4+3;% Maximum / Minimum
+      
+	  intcont=dvector(i,ne)-dvector(i,(i1-1)*2+1)-dvector(i,(i2-1)*2+1);
 
-	% If interaction signal smaller than noise level, no fit to
+	    % If interaction signal smaller than noise level, no fit to
         % it. Since interaction term considers several differences
         % of noisy data total noise level is 5 times the noise level 
 	
-	intcont2=intcont-sign(intcont)*5*nl(i); 
+	    % intcont2=intcont-sign(intcont)*5*nl(i); 
 
-	if intcont2*intcont<0
-	  intcont=0;
-	else
-	  intcont=intcont2;
-	end
+	    % if intcont2*intcont<0
+	    %  intcont=0;
+	    % else
+	    %  intcont=intcont2;
+	    % end
         
         % Interaction terms tend to get too large if only one
         % simulation considered. From experience bettere results
@@ -200,85 +216,89 @@ for i=1:nd % Estimate metamodel for each datapoint
         % the moment. Caplevel (cl) currently 1/4 of total linear
         % and quadratic contribution, arbitrary
 
-	cl=(dvector(i,(i1-1)*2+1)+dvector(i,(i2-1)*2+1))/4;
+        % cl=(dvector(i,(i1-1)*2+1)+dvector(i,(i2-1)*2+1))/4;
 
-        if intcont>cl
-	  intcont=cl;
-	end
+        % if intcont>cl
+	      % intcont=cl;
+	    % end
 	
-	B(i,i1,i2)=intcont/(2*pmatrix(ne,i1)*pmatrix(ne,i2));
-    end
+	  B(i,i1,i2)=intcont/(2*pmatrix(ne,i1)*pmatrix(ne,i2));
+     end
   end
   % Use additional simulations to constrain interaction parameters
   % using a least square minimization
 end
+
+% Set rmsest=false to not use additional corners to estimate the interaction terms
+%rmsest=false
 
 if rmsest
   intind=pmatrix./pmatrix;
   rgv=[100 10 2 1 0.5 0.1];
   for k=1:length(rgv) % Loops of error reduction
     for n=1:di % Number of interactions
-      i1=pqn(n,1); i2=pqn(n,2); ne=n+2*N; rg=rgv(k);acc=10; 
+        
+      i1=pqn(n,1); i2=pqn(n,2); ne=n+2*N; rg=rgv(k);acc=100; 
       % Indices of parameters for interactions
       % Search for interaction experiments
-      expi=find(sum(intind(:,[pqn(n,1),pqn(n,2)]),2)==2);  
+      expi=find(sum(intind(:,[i1,i2]),2)==2);  
       % Create a vector of interaction parameters with space rg and
       % acuracy acc centered around the original estimated
       % interaction term
       
       if nd>1
-	for p=1:nd
-	  bint(p,:)=linspace(B(p,i1,i2)-rg*B(p,i1,i2),B(p,i1,i2)+rg*B(p,i1,i2),acc);
-	end
+	    for p=1:nd
+	      bint(p,:)=linspace(B(p,i1,i2)-rg*abs(B(p,i1,i2)),B(p,i1,i2)+rg*abs(B(p,i1,i2)),acc);
+	    end
       else
-	bint=linspace(B(i1,i2)-rg*B(i1,i2),B(i1,i2)+rg*B(i1,i2),acc);
+	    bint=linspace(B(i1,i2)-rg*abs(B(i1,i2)),B(i1,i2)+rg*abs(B(i1,i2)),acc);
       end
       for j=1:length(expi)
-	for i=1:acc
-	  Btmp=B;
-	  % Prepare parameter matrices for matrix operation
-	  x=reshape(pmatrix(expi(j),:),[1 N]);
-	  xa=squeeze(repmat(x,[nd 1]));
-	  xh1=reshape(pmatrix(expi(j),:),[1 1 N]);
-	  xh2=reshape(pmatrix(expi(j),:),[1 N 1]);
-	  xb1=squeeze(repmat(xh1,[nd,N,1]));
-	  xb2=squeeze(repmat(xh2,[nd,1,N]));
-	  xb1(:,i1,i1)=pmatrix(expi(j),i1);xb1(:,i2,i2)=pmatrix(expi(j),i2);
+	    for i=1:acc
+	      Btmp=B;
+	      % Prepare parameter matrices for matrix operation
+	      x=reshape(pmatrix(expi(j),:),[1 N]);
+	      xa=squeeze(repmat(x,[nd 1]));
+	      xh1=reshape(pmatrix(expi(j),:),[1 1 N]);
+	      xh2=reshape(pmatrix(expi(j),:),[1 N 1]);
+	      xb1=squeeze(repmat(xh1,[nd,N,1]));
+	      xb2=squeeze(repmat(xh2,[nd,1,N]));
+	      xb1(:,i1,i1)=pmatrix(expi(j),i1);xb1(:,i2,i2)=pmatrix(expi(j),i2);
           xb2(:,i1,i1)=pmatrix(expi(j),i1);xb2(:,i2,i2)=pmatrix(expi(j),i2);
+    	  
+          % Parameter matrix without consideration of interactions
+	      xbni1=zeros(size(xb1));xbni1(:,i1,i1)=xb1(:,i1,i1);xbni1(:,i2,i2)=xb1(:,i2,i2);
+	      xbni2=zeros(size(xb2));xbni2(:,i1,i1)=xb2(:,i1,i1);xbni2(:,i2,i2)=xb2(:,i2,i2); 
 
-	  % Parameter matrix without consideration of interactions
-	  xbni1=zeros(size(xb1));xbni1(:,i1,i1)=xb1(:,i1,i1);xbni1(:,i2,i2)=xb1(:,i2,i2);
-	  xbni2=zeros(size(xb2));xbni2(:,i1,i1)=xb2(:,i1,i1);xbni2(:,i2,i2)=xb2(:,i2,i2); 
-
-	  if nd>1
-	    Btmp(:,i1,i2)=bint(:,i); Btmp(:,i2,i1)=bint(:,i);            
-	    dtmp(i,j,:)=sum(xa'.*a')+sum(sum(xb2.*xb1.*Btmp,3),2)';
-	  end
-	end
-	 if nd>1
-	   dcmp(j,:)=dvector(:,expi(j));
-	 else 
-	   dcmp(j)=dvector(expi(j));
-	 end
-	 % Determine contribution of parameter interactions
+	      if nd>1
+	        Btmp(:,i1,i2)=bint(:,i); Btmp(:,i2,i1)=bint(:,i);            
+	        dtmp(i,j,:)=sum(xa'.*a')+sum(sum(xb2.*xb1.*Btmp,3),2)';
+          end
+        end
+	    if nd>1
+	      dcmp(j,:)=dvector(:,expi(j));
+        else 
+	      dcmp(j)=dvector(expi(j));
+        end
+        
+	     % Determine contribution of parameter interactions
          % dnoint(n,j,:)=sum(xa'.*a')+sum(sum(xbni2.*xbni1.*Btmp,3),2)';
          % nointp(n,j,:)=[pmatrix(expi(j),i1),pmatrix(expi(j),i2)];
       end 
       if k==length(rgv)
-	display(['Use least-square estimation for interaction parameter' ...
-		 ' B' num2str(pqn(n,1)) num2str(pqn(n,2))]);
+	    display(['Use least-square estimation for interaction parameter' ...
+		         ' B' num2str(pqn(n,1)) num2str(pqn(n,2))]);
       end
       if nd>1
-	[m im]=min(squeeze(sum((dtmp-repmat(reshape(dcmp,[1 ...
-		    size(dcmp)]),[acc,1,1])).^2,2)));
-	[mo imo]=min(squeeze((dtmp-repmat(reshape(dcmp,[1 ...
-                    size(dcmp)]),[acc,1,1])).^2));
-	imo=squeeze(imo);
-	size(imo);
-	vsum(k,n)=mean(var(imo));
-	for p=1:nd
-	  B(p,i1,i2)=bint(p,im(p));B(p,i2,i1)=bint(p,im(p));
-	end
+	    [m im]=min(squeeze(sum((dtmp-repmat(reshape(dcmp,[1 ...
+		       size(dcmp)]),[acc,1,1])).^2,2)));
+	    
+        %[mo imo]=min(squeeze((dtmp-repmat(reshape(dcmp,[1 ...
+        %            size(dcmp)]),[acc,1,1])).^2));
+        
+	    for p=1:nd
+	      B(p,i1,i2)=bint(p,im(p));B(p,i2,i1)=bint(p,im(p));
+	    end
       else
       end
     end % for n

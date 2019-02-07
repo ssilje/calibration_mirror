@@ -1,16 +1,16 @@
 function [errstd errps]=errmeta(metamodel,parameters,datamatrix)
 
 % Estimate the error of the metamodel to predict indpendent model information
-% NAME 
+% NAME
 %   errmeta
-% PURPOSE 
+% PURPOSE
 %   Predict modeldata on of independt simulations and estimate the
 %   standard error of the metamodel
 %
-% INPUTS 
-%   The structure metamodel, parameters and datamatrix 
+% INPUTS
+%   The structure metamodel, parameters and datamatrix
 %   are used for the inpute of neelin_p. Addionally the parameter
-%   matrix is read 
+%   matrix is read
 %
 %   parameters.experiments:
 %
@@ -21,14 +21,14 @@ function [errstd errps]=errmeta(metamodel,parameters,datamatrix)
 %           Index in the model data along which the prediction
 %           error is physically seperated (ex: ind of different
 %           model variabiles (temperature,precipitation,clouds))
-% OUTUTS 
+% OUTUTS
 %   Plot: Scatter plot for each defined variable of simulated and
 %   predicted points
 %   errstd: Standard error to predict the model data
 %   errps: Standard error to predict the model score
-% HISTORY 
+% HISTORY
 % First version: 11.10.2013
-% AUTHOR  
+% AUTHOR
 %   Omar Bellprat (omar.bellprat@gmail.com)
 
 
@@ -36,18 +36,18 @@ function [errstd errps]=errmeta(metamodel,parameters,datamatrix)
 %--------------------------------------------------------------------
 % READ Input values from structures
 %--------------------------------------------------------------------
-
+const_param;
 N=length(parameters);
-pmatrix=parameters(1).validation % Parameter values of validation experiments
+pmatrix=parameters(1).validation'; % Parameter values of validation experiments
 sd=size(datamatrix.moddata);
-nd=prod(sd(1:end-1)); % Number of datapoints                                  
+nd=prod(sd(1:end-1)); % Number of datapoints
 numvar=length(datamatrix.variables)-1;
 indvar=datamatrix.variables{1};
 refd=datamatrix.refdata;
 sr=size(refd);
 
 if ~exist('noplot','var')
-  noplot=false
+    noplot=false
 end
 
 %--------------------------------------------------------------------
@@ -57,56 +57,71 @@ end
 % Help variable to select all matrix dimensions if no score used
 dd=ndims(datamatrix.refdata);
 if dd>2
-  for i=1:dd
-    indd{i}=':';
-  end
+    for i=1:dd
+        indd{i}=':';
+    end
 else
-  indd=':';
+    indd=':';
 end
 
 predval=NaN([size(datamatrix.refdata),size(pmatrix,1)]); % Allocate data
 
 for i=1:size(pmatrix,1)
-  predval(indd{:},i)=neelin_p(metamodel,parameters,datamatrix,pmatrix(i,:)); 
+    predval(indd{:},i)=neelin_p(metamodel,parameters,datamatrix,pmatrix(i,:));
 end
 
 errpred=squeeze(predval)-datamatrix.valdata;
-noplot=true
-if (noplot)
-figure;
-for i=1:numvar
-  subplot(1,numvar,i)
-  indd{indvar}=i;
-  tmpr=datamatrix.obsdata(indd{:});
-  tmps=squeeze(datamatrix.valdata(indd{:},:))-repmat(tmpr,[size(tmpr)./size(tmpr) 10]);
-  tmpp=squeeze(predval(indd{:},:))-repmat(tmpr,[size(tmpr)./size(tmpr) 10]);
-  lwb=(min(tmpp(:))-abs(min(tmpp(:)))*.15);
-  upb=(max(tmpp(:))+abs(min(tmpp(:)))*.15);
-  [hs xs]=hist(tmps(:),linspace(lwb,upb,50));
-  [hp xp]=hist(tmpp(:),linspace(lwb,upb,50));
-  hold on
-  errs(i,:)=prctile(tmps(:)-tmpp(:),[5 95]);
-  refln=linspace(lwb,upb,1000);
-  f = [refln-errs(i,1)/2;flipdim(refln-errs(i,2)/2,1)];
-  plot(tmps(:),tmpp(:),'.','MarkerSize',.1,'color','k');
-  fiv=patch([refln; flipdim(refln,1)], f, [5 5 5]/8, 'EdgeColor',[5 5 5]/8);
-  hr=plot(refln,refln,'Linewidth',1.5,'color','k');
-  ylabel(['Predicted ' datamatrix.variables{i+1}],'Fontsize',14)
-  xlabel(['Simulated ' datamatrix.variables{i+1}],'Fontsize',14)
-  set(gca,'Fontsize',14,'Ylim',[lwb upb],'Xlim',[lwb upb],'Box','on')
-  hpdf=(upb-lwb)/5; scalef=hpdf/max(hs);
-  plot(smooth(hs,10)*scalef+lwb,xs,'k','Linewidth',1.5)
-  plot(xp,smooth(hp,10)*scalef+lwb,'k','Linewidth',1.5)
-  rstat=regstats(tmps(:),tmpp(:));
-  title(['R^2=' num2str(roundn(rstat.rsquare,-2))],'Fontsize',14)
-%  if i==1
-%    hl=legend([fiv(1),hr],['95% range'],['R^2=' num2str(roundn(rstat.rsquare,-2))],2);
-%    set(hl,'Box','off')
-%  else
-%    hl=legend([hr],['R^2=' num2str(roundn(rstat.rsquare,-2))],2);
-%    set(hl,'Box','off')
-%  end
-end
+noplot=true;
+if (noplot);
+    %figure;
+    figure('Units','normalized','Position',[0 0 1 1],'visible','on');
+    for i=1:numvar
+        subplot(1,numvar,i)
+        indd{indvar}=i;
+        tmpr=datamatrix.obsdata(indd{:});
+        %tmps=squeeze(datamatrix.valdata(indd{:},:))-repmat(tmpr,[size(tmpr)./size(tmpr) 10]);
+        %tmpp=squeeze(predval(indd{:},:))-repmat(tmpr,[size(tmpr)./size(tmpr) 10]);
+        
+        %The metamodel have to be able to predict is the bias of the model,
+        %not its fields itsel. that is why we test with the bias
+        %(subtracting the obs)
+
+        tmps=squeeze(datamatrix.valdata(indd{:},:))-repmat(tmpr,[size(tmpr)./size(tmpr) nind]); %CORRECT?
+        tmpp=squeeze(predval(indd{:},:))-repmat(tmpr,[size(tmpr)./size(tmpr) nind]);
+      
+        %tmps=squeeze(datamatrix.valdata(indd{:},:)); %CORRECT?
+        %tmpp=squeeze(predval(indd{:},:));
+      
+        lwb=(min(tmpp(:))-abs(min(tmpp(:)))*.15);
+        upb=(max(tmpp(:))+abs(min(tmpp(:)))*.15);
+        [hs xs]=hist(tmps(:),linspace(lwb,upb,50));
+        [hp xp]=hist(tmpp(:),linspace(lwb,upb,50));
+        hold on
+        errs(i,:)=prctile(tmps(:)-tmpp(:),[5 95]);
+        refln=linspace(lwb,upb,1000);
+        f = [refln-errs(i,1)/2;flipdim(refln-errs(i,2)/2,1)];
+        plot(tmps(:),tmpp(:),'.','MarkerSize',.1,'color','k');
+        fiv=patch([refln; flipdim(refln,1)], f, [5 5 5]/8, 'EdgeColor',[5 5 5]/8);
+        hr=plot(refln,refln,'Linewidth',1.5,'color','k');
+        ylabel(['Predicted ' datamatrix.variables{i+1}],'Fontsize',14)
+        xlabel(['Simulated ' datamatrix.variables{i+1}],'Fontsize',14)
+        set(gca,'Fontsize',14,'Ylim',[lwb upb],'Xlim',[lwb upb],'Box','on')
+        hpdf=(upb-lwb)/5; scalef=hpdf/max(hs);
+        plot(smooth(hs,10)*scalef+lwb,xs,'k','Linewidth',1.5)
+        plot(xp,smooth(hp,10)*scalef+lwb,'k','Linewidth',1.5)
+        rstat=regstats(tmps(:),tmpp(:));
+        title(['R^2=' num2str(roundn(rstat.rsquare,-2))],'Fontsize',14)
+        axes('Visible','off')
+        set(gcf,'Paperposition',[0 0 8*1.2 6*1.2])
+        print('-f1','-depsc','errmeta')
+        %  if i==1
+        %    hl=legend([fiv(1),hr],['95% range'],['R^2=' num2str(roundn(rstat.rsquare,-2))],2);
+        %    set(hl,'Box','off')
+        %  else
+        %    hl=legend([hr],['R^2=' num2str(roundn(rstat.rsquare,-2))],2);
+        %    set(hl,'Box','off')
+        %  end
+    end
 end
 
 

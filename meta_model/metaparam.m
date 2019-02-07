@@ -67,8 +67,8 @@ indent=1.5;
 % PLOT Metamodel parameters
 %--------------------------------------------------------------------
 
-figure;
-
+%figure;
+figure('Units','normalized','Position',[0 0 1 1],'visible','on');
 ax1=axes('Position',[.35 .2 0.5 .65]);
 t=eye(N+1,N+1);
 t2=zeros(1,N+1);

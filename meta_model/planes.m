@@ -104,7 +104,7 @@ pn2=di/pn1; pm=[pn1,pn2];
 %--------------------------------------------------------------------
 % DEFINE Plot characteristics
 %--------------------------------------------------------------------
-
+figure('Units','normalized','Position',[0 0 1 1],'visible','on');
 for i=1:length(pqn)
   xgrid=linspace(range{pqn(i,1)}(1),range{pqn(i,1)}(2),acc);
   ygrid=linspace(range{pqn(i,2)}(1),range{pqn(i,2)}(2),acc);

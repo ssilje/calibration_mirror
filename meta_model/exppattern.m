@@ -46,12 +46,13 @@ end
 
 diffref=repmat(refd,[ones(1,dd) ds]);
 expdata=datamatrix.moddata(indd{:},1:ds)-diffref;
-seassel=[12,1:2;3:5;6:8;9:11];
+seassel=[12,1:2;3:5;6:8;9:11]; % to make seasonal means
 indc=find(size(refd)==12);
-
+ 
 for k=1:4
- expdatas(k,:,:,:)=mean(mean(expdata(:,seassel(k,:),:,:,:),2),1);
+ expdatas(k,:,:,:)=mean(mean(expdata(:,seassel(k,:),:,:,:),2),1); %(1) mean over seasons (2) mean over years
 end
+ % expdates dim [4 8 3 10] 4--> seasons; 8 --> regions; 3 -->  variables; 10 --> parameters min/max
 
 climits=[-1.5 1.5;-1 1;-15 15];
 
@@ -75,16 +76,19 @@ for i=1:4
     figure;
     axes('Position',[0.25 .1 .65 .8])
     tmp=zeros(ds+1,9);
-    size(expdatas)
-    tmp(end-1:-1:1,end-1:-1:1)=squeeze(expdatas(i,:,j,:))'
+    
+    %tmp(end-1:-1:1,end-1:-1:1)=squeeze(expdatas(i,:,j,:))'
+    tmp(end-1:-1:1,1:1:end-1)=squeeze(expdatas(i,:,j,:))'; % Corrected Silje oct 2018
     pcolor(tmp)
     colormap(hotcold)
     colorbar
     set(gca,'XTick',[1.5:8.5],'XTickLabel',regname)
-    set(gca,'YTick',[1.5:2*N+.5])
+    set(gca,'YTick',[1.5:2*N+.5],'YTickLabel',pnames(end:-1:1))
     set(gca,'Fontsize',14)
     
-    [hx,hy] = format_ticks(gca,regname, pnames(end:-1:1),[1.5:8.5],[1.5:2*N+.5],[0],[45],[],'FontSize',14);
+   % [hx,hy] = format_ticks(gca,regname,pnames(end:-1:1),[1.5:8.5],[1.5:2*N+.5],[0],[45],[],'FontSize',14);
+ 
+   
     caxis(climits(j,:))
     title([char(datamatrix.variables{j+1}) ' / ' seasons{i}],'Fontsize',18)
     set(gcf,'PaperPosition',[2 2 6 9])

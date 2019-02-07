@@ -76,10 +76,20 @@ poptr=lhexp(find(lhscore>max(lhscore)-errm),:);
 %[d ind]=min(ds);
 %popt=poptr(ind,:);
 %popt=pk;
+figure('Units','normalized','Position',[0 0 1 1],'visible','on');
 
-figure;
+%setting the subfigures for plotting
+
+if (N == 1 || N == 3 || N == 5 || N == 7 )
+    N_plot=N+1;    
+else
+    N_plot=N;
+   
+end
+  
+
 for i=1:N
-  subplot(2,N/2,i);
+  subplot(2,N_plot/2,i);
   prange=linspace(range{i}(1),range{i}(2),25);
   hh=hist(poptr(:,i),prange);
   bar(prange,hh,'FaceColor',pb,'EdgeColor',pb);
