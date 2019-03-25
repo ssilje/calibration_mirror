@@ -41,7 +41,7 @@ optrun=false; % only set this to true if you are running after having the OPT ru
 OPT_matfile='calibration_OPT_';
 % If you want to run the calibration several times to get differnet
 % sets of OPT parameters
-ntimes_opt=2; % number of times to run the calibration
+ntimes_opt=1; % number of times to run the calibration
 
 % file with constants for the simlations. Needs to be set depending on
 % the experiemntal design
@@ -57,6 +57,11 @@ parameters=struct('name',paramn,'range',range','default',default,'experiments', 
 load('stddata_2000-2009.mat');
 iv=iv_n; stdobs=stdobs_n; err=err_n;
 
+%% Description see Bellprat et al. 2012
+% iv: std of ensemble of five initial pertubations
+% stdobs:interannual std for the reference obs
+% err: std for three different obs dataset
+%%
 
 % If only the last five years are used in the calibration
 
