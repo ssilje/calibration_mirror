@@ -75,8 +75,8 @@ pbd=([184 210 237]-100)./255;
 hotcold=[linspace(pbd(1),1,100)' linspace(pbd(2),1,100)' linspace(pbd(3),1,100)';...
          linspace(1,prd(1),100)' linspace(1,prd(2),100)' linspace(1,prd(3),100)'];
 
-cmin=0.5; % Minimum contourlevel range 
-cmax=0.75; % Minimum contourlevel range 
+cmin=0.1; % Minimum contourlevel range 
+cmax=0.35; % Minimum contourlevel range 
 colorsc=linspace(cmin, cmax,200);
 
 acc=20;  % Number of contourlevel intervals

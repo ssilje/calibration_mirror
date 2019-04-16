@@ -29,6 +29,7 @@ function optparam(parameters,lhscore,lhexp,popt,errm)
 
 N=length(parameters);
 range={parameters.range}; % Parameter ranges
+default={parameters.default};
 
 %--------------------------------------------------------------------
 % DEFINE Additional needed vectors
@@ -80,7 +81,7 @@ figure('Units','normalized','Position',[0 0 1 1],'visible','on');
 
 %setting the subfigures for plotting
 
-if (N == 1 || N == 3 || N == 5 || N == 7 )
+if (N == 1 || N == 3 || N == 5 || N == 7 || N == 9 )
     N_plot=N+1;    
 else
     N_plot=N;
@@ -89,16 +90,37 @@ end
   
 
 for i=1:N
-  subplot(2,N_plot/2,i);
-  prange=linspace(range{i}(1),range{i}(2),25);
+ % subplot(2,N_plot/2,i);
+  close all
+  figure 
+  if default{1}(i)<range{i}(1)
+      prange=linspace(default{1}(i),range{i}(2),25);
+      range_plot{i}(1)=default{1}(i);
+      range_plot{i}(2)=range{i}(2);
+      
+  elseif default{1}(i)>range{i}(2)
+      prange=linspace(range{i}(1),default{1}(i),25);
+      range_plot{i}(1)=range{i}(1);
+      range_plot{i}(2)=default{1}(i);
+  else
+      
+      prange=linspace(range{i}(1),range{i}(2),25);
+      range_plot{i}(1)=range{i}(1);
+      range_plot{i}(2)=range{i}(2);
+  end
+ 
+ 
   hh=hist(poptr(:,i),prange);
+
   bar(prange,hh,'FaceColor',pb,'EdgeColor',pb);
   [d ind]=max(hh);
-  pk(i)=range{i}(2)+(range{i}(2)-range{i}(1))/25*ind;
+  %pk(i)=range{i}(2)+(range{i}(2)-range{i}(1))/25*ind;
+  pk(i)=range_plot{i}(2)+(range_plot{i}(2)-range_plot{i}(1))/25*ind;
+  
   hold on
   title(char(parameters(i).name_tex),'Fontsize',16)
-  rp=abs(range{i}(2)-range{i}(1));
-  xlim([range{i}(1)-rp*0.1 range{i}(2)+rp*0.1]);
+  rp=abs(range_plot{i}(2)-range_plot{i}(1));
+  xlim([range_plot{i}(1)-rp*0.1 range_plot{i}(2)+rp*0.1]);
 
   if i==1
     ylabel('Density','Fontsize',16)
@@ -129,9 +151,10 @@ for i=1:N
 %    set(hl,'Box','off','Fontsize',16)
   end
   clear ylims; 
+set(gcf,'PaperPosition',[1 1 10 4]);
+parameters(i).name_tex
+print('-f1','-depsc',['optparam_' parameters(i).name]);
 end
 
-set(gcf,'PaperPosition',[1 1 10 4]);
-print('-f1','-depsc','optparam');
 
 

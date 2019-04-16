@@ -16,8 +16,8 @@ obsdata=read_obs('observations');
 % Calculate observational uncertainty
 const_param;
 
-%obsall=NaN([3,nyear,12,nparam,3]);
-obsall=NaN([3,nyear,12,8,3]);
+%obsall=NaN([3,nyear,12,regions,3]);
+obsall=NaN([3,nyear,12,11,3]);
 
 
 obsall(1,:,:,:,:)=obsdata;
@@ -35,8 +35,8 @@ optdata=read_model('optimised'); % reading the opt simulations
 end
 
 
-moddata=NaN(nyear,12,8,3,nsim); %year month regions variables simulations
-valdata=NaN(nyear,12,8,3,nind);
+moddata=NaN(nyear,12,11,3,nsim); %year month regions variables simulations
+valdata=NaN(nyear,12,11,3,nind);
 
 
 

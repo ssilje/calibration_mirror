@@ -38,10 +38,10 @@ addpath('PolyfitnTools')
 %optrun=true; % only set this to true if you are running after having the OPT run
 optrun=false; % only set this to true if you are running after having the OPT run
 %OPT_matfile='/hymet/ssilje/cosmopompa_calibration/meta_model/data/opt_5.mat';
-OPT_matfile='calibration_OPT_';
+OPT_matfile='calibration_OPT_neelin_e_8param';
 % If you want to run the calibration several times to get differnet
 % sets of OPT parameters
-ntimes_opt=2; % number of times to run the calibration
+ntimes_opt=1; % number of times to run the calibration
 
 % file with constants for the simlations. Needs to be set depending on
 % the experiemntal design
@@ -54,7 +54,7 @@ expval=create_neelin_exp(parameters); % Experiment values to fit metamodel
 parameters=struct('name',paramn,'range',range','default',default,'experiments', ...
     expval,'name_tex',paramnt,'validation',valdata');
 
-load('stddata_2000-2009.mat');
+load('stddata_2000-2004_CA.mat');
 iv=iv_n; stdobs=stdobs_n; err=err_n;
 
 
@@ -102,7 +102,7 @@ else
         %
         % in the code-package there are two methods to fit the metamodel
         % (neelin_e_analytic and neelin_e). They give slightly different
-        % results, and it is not quite clear. For the calibration performed by
+        % results, and it is not quite clear why. For the calibration performed by
         % Omar, he used the neelin_e_analytic, but in the CALMO-max they
         % use the neelin_e method
         %
@@ -110,12 +110,12 @@ else
         
         % (1) Method Neelin to estimate MetaModel
         
-        metamodel=neelin_e_analytic(parameters,datamatrix,iv);
+       % metamodel=neelin_e_analytic(parameters,datamatrix,iv);
         
         % (2) Method CALMO to estimate MetaModel
         %
         
-        %metamodel=neelin_e(parameters,datamatrix,iv);
+        metamodel=neelin_e(parameters,datamatrix,iv);
         
         %-----------------------------------------------------------------
         % VALIDATION METRICS
@@ -155,7 +155,8 @@ else
         % (1) Find optimal model parameters using a latin hypercube
         % optimisation
         
-        %lhacc=3000000;
+        %lhacc=3000000; % what used for calibration. The lower number is
+        %for tests
         lhacc=30000;
         % Number of experiments to sample parameter space, for
         % means of speed a low number of parameter combinations
