@@ -7,7 +7,7 @@ varf={'t2m','rr','clct'};
 
 exppath=[simdir,expname,'/'];
 % dim [year month regions variables]
-moddata=NaN(nyear,12,8,3);
+moddata=NaN(nyear,12,nregions,3);
 
 
 

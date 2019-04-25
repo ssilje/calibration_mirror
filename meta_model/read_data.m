@@ -16,8 +16,8 @@ obsdata=read_obs('observations');
 % Calculate observational uncertainty
 const_param;
 
-%obsall=NaN([3,nyear,12,regions,3]);
-obsall=NaN([3,nyear,12,11,3]);
+obsall=NaN([3,nyear,12,nregions,3]);
+
 
 
 obsall(1,:,:,:,:)=obsdata;

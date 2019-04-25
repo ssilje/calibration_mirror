@@ -6,7 +6,7 @@ varf={'T_2M','TOT_PREC','CLCT'};
 exppath=obsdir;
 
 %[dim year month regions variables]
-obsdata=NaN(nyear,12,11,3);
+obsdata=NaN(nyear,12,nregions,3);
 
 for ii=1:3
     for r=1:11

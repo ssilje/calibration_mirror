@@ -45,7 +45,7 @@ expid={'d', 'rl' , 'tk', 'v','ra' , 's', 'u', 'q' , 'e' };
 paramn={'d_mom','rlam_heat', 'tkhmin', 'v0snow',  'radfac' , 'soilh' ,'uc1', 'qi0' , 'e_surf'}; % No TEX interpreter
 paramnt={'d\_mom','rlam\_heat', 'tkhmin', 'v0snow', 'radfac', 'soilh' , 'uc1', 'qi0' , 'e\_surf'}; % No TEX interpreter
 
-
+nregions=11;
 regnames={'clu1','clu2','clu3','clu4','clu5','clu6','clu7','clu8', 'clu9', 'clu10', 'clu11'};
 
 
