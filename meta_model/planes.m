@@ -76,7 +76,7 @@ hotcold=[linspace(pbd(1),1,100)' linspace(pbd(2),1,100)' linspace(pbd(3),1,100)'
          linspace(1,prd(1),100)' linspace(1,prd(2),100)' linspace(1,prd(3),100)'];
 
 cmin=0.1; % Minimum contourlevel range 
-cmax=0.35; % Minimum contourlevel range 
+cmax=0.5; % Minimum contourlevel range 
 colorsc=linspace(cmin, cmax,200);
 
 acc=20;  % Number of contourlevel intervals
@@ -101,13 +101,72 @@ dv=divisor(di);
 pn1=dv(floor(length(dv)/2));
 pn2=di/pn1; pm=[pn1,pn2];
 
+    
+    lwb=false(1,N);upb=false(1,N);
+    
+    for n=1:N
+        if sum(find(pmatrix(:,n)<refp(n)))==0
+            lwb(n)=true;
+            display(['Default of parameter ' parameters(n).name ...
+                ' is taken at the lower bound'])
+        end
+        if sum(find(pmatrix(:,n)>refp(n)))==0
+            upb(n)=true;
+            display(['Default of parameter ' parameters(n).name ...
+                ' is taken at the upper bound'])
+        end
+        
+        ne=1+(n-1)*2; %Index of single parameter experiments
+        xv=[pmatrix(ne,n),0,pmatrix(ne+1,n)];
+        
+        
+        if lwb(n)
+            xv=[0,pmatrix(ne,n),pmatrix(ne+1,n)];
+            
+        end
+        if upb(n)
+            xv=[pmatrix(ne,n),pmatrix(ne+1,n),0];
+            
+        end
+    end
+
+
 %--------------------------------------------------------------------
 % DEFINE Plot characteristics
 %--------------------------------------------------------------------
 figure('Units','normalized','Position',[0 0 1 1],'visible','on');
 for i=1:length(pqn)
-  xgrid=linspace(range{pqn(i,1)}(1),range{pqn(i,1)}(2),acc);
-  ygrid=linspace(range{pqn(i,2)}(1),range{pqn(i,2)}(2),acc);
+    
+  
+   min_range_xgrid=range{pqn(i,1)}(1);
+   max_range_xgrid=range{pqn(i,1)}(2);
+   
+    if (range{pqn(i,1)}(1)> refp(pqn(i,1)))
+        min_range_xgrid=refp(pqn(i,1))
+    end
+    if (range{pqn(i,1)}(2)< refp(pqn(i,1)))
+        max_range_xgrid=refp(pqn(i,1))
+    end
+    
+    min_range_ygrid=range{pqn(i,2)}(1);
+    max_range_ygrid=range{pqn(i,2)}(2);
+    
+    if (range{pqn(i,2)}(1)> refp(pqn(i,2)))
+        min_range_ygrid=refp(pqn(i,2))
+    end
+    if (range{pqn(i,2)}(1)< refp(pqn(i,2)))
+        max_range_ygrid=refp(pqn(i,2))
+    end
+    
+    
+    range{pqn(i,2)}(1)
+    range{pqn(i,2)}(2)
+    refp(pqn(i,2))
+    
+  %xgrid=linspace(range{pqn(i,1)}(1),range{pqn(i,1)}(2),acc);
+  %ygrid=linspace(range{pqn(i,2)}(1),range{pqn(i,2)}(2),acc);
+  xgrid=linspace(min_range_xgrid,max_range_xgrid,acc);
+  ygrid=linspace(min_range_ygrid,max_range_ygrid,acc);
   
   [X Y]=meshgrid(xgrid,ygrid);
   xstarp=repmat(refp,[acc^2,1]);
