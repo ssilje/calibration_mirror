@@ -35,8 +35,8 @@ optdata=read_model('optimised'); % reading the opt simulations
 end
 
 
-moddata=NaN(nyear,12,11,3,nsim); %year month regions variables simulations
-valdata=NaN(nyear,12,11,3,nind);
+moddata=NaN(nyear,12,nregions,3,nsim); %year month regions variables simulations
+valdata=NaN(nyear,12,nregions,3,nind);
 
 
 

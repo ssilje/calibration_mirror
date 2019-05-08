@@ -86,11 +86,11 @@ if (noplot);
         %not its fields itsel. that is why we test with the bias
         %(subtracting the obs)
 
-        tmps=squeeze(datamatrix.valdata(indd{:},:))-repmat(tmpr,[size(tmpr)./size(tmpr) nind]); %CORRECT?
-        tmpp=squeeze(predval(indd{:},:))-repmat(tmpr,[size(tmpr)./size(tmpr) nind]);
+        %tmps=squeeze(datamatrix.valdata(indd{:},:))-repmat(tmpr,[size(tmpr)./size(tmpr) nind]); %CORRECT?
+        %tmpp=squeeze(predval(indd{:},:))-repmat(tmpr,[size(tmpr)./size(tmpr) nind]);
       
-        %tmps=squeeze(datamatrix.valdata(indd{:},:)); %CORRECT?
-        %tmpp=squeeze(predval(indd{:},:));
+        tmps=squeeze(datamatrix.valdata(indd{:},:)); %CORRECT?
+        tmpp=squeeze(predval(indd{:},:));
       
         lwb=(min(tmpp(:))-abs(min(tmpp(:)))*.15);
         upb=(max(tmpp(:))+abs(min(tmpp(:)))*.15);

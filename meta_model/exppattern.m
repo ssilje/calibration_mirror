@@ -29,7 +29,7 @@ function exppattern(parameters,datamatrix)
 %--------------------------------------------------------------------
 % READ Input values from structures
 %--------------------------------------------------------------------
-
+const_param;
 N=length(parameters); % Number of model parameters
 indv=datamatrix.variables{1};
 ds=2*N; 
@@ -60,9 +60,9 @@ seasons={'DJF','MAM','JJA','SON'};
 
 prd=([206 81 77]-50)./255;
 pbd=([184 210 237]-100)./255;
-%regname={'BI';'IP';'FR';'ME';'SC';'AL';'MD';'EA'};
-%regname={'clu1','clu2','clu3','clu4','clu5','clu6','clu7','clu8', 'clu9', 'clu10', 'clu11'};
-regname={'1','2','3','4','5','6','7','8', '9', '10', '11'};
+
+
+
 hotcold=[linspace(pbd(1),1,100)' linspace(pbd(2),1,100)' linspace(pbd(3),1,100)';...
          linspace(1,prd(1),100)' linspace(1,prd(2),100)' linspace(1,prd(3),100)'];
 
@@ -79,7 +79,8 @@ for i=1:4
     figure;
     axes('Position',[0.25 .1 .65 .8])
     %tmp=zeros(ds+1,9);
-    tmp=zeros(ds+1,12);
+    %tmp=zeros(ds+1,12);
+    tmp=zeros(ds+1,nregions+1);
     
     %tmp(end-1:-1:1,end-1:-1:1)=squeeze(expdatas(i,:,j,:))'
     tmp(end-1:-1:1,1:1:end-1)=squeeze(expdatas(i,:,j,:))'; % Corrected Silje oct 2018
@@ -87,7 +88,7 @@ for i=1:4
     colormap(hotcold)
     colorbar
     %set(gca,'XTick',[1.5:8.5],'XTickLabel',regname)
-    set(gca,'XTick',[1.5:11.5],'XTickLabel',regname)
+    set(gca,'XTick',[1.5:11.5],'XTickLabel',regnames)
     set(gca,'YTick',[1.5:2*N+.5],'YTickLabel',pnames(end:-1:1))
     set(gca,'Fontsize',14)
     

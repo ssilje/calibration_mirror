@@ -7,13 +7,14 @@ exppath=obsdir;
 
 %[dim year month regions variables]
 obsdata=NaN(nyear,12,nregions,3);
-
 for ii=1:3
-    for r=1:11
+    for r=1:nregions
         %dat=ncread([exppath,varf{ii},'_',num2str(r),'.nc'],varn{ii});
-        A=[exppath '/' varf{ii} '/fld_clu' num2str(r) '_merge_mm_2000-2004.nc'];
+       % A=[exppath '/' varf{ii} '/fld_clu' num2str(r) '_merge_mm_2000-2004.nc'];
+        A=[exppath '/' varf{ii} '/fld_' regnames{r} '_merge_mm_2000-2004.nc'];
         disp(A)
-        dat=ncread([exppath '/' varf{ii} '/fld_clu' num2str(r) '_merge_mm_2000-2004.nc'],varn{ii});
+        %dat=ncread([exppath '/' varf{ii} '/fld_clu' num2str(r) '_merge_mm_2000-2004.nc'],varn{ii});
+        dat=ncread([exppath '/' varf{ii} '/fld_' regnames{r} '_merge_mm_2000-2004.nc'],varn{ii});
         if (ii==3  && strcmp(obsname,'observations_alt2'))
             dat2=NaN(1,1,120);
             dat2(1,1,3:120)=dat;

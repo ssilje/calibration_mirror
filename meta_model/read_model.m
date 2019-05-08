@@ -12,9 +12,9 @@ moddata=NaN(nyear,12,nregions,3);
 
 
 for ii=1:3
-    for r=1:11
+    for r=1:nregions
         %moddat=ncread([exppath,varf{ii},'_mod_',num2str(r),'.nc'],varn{ii});
-        moddat=ncread([exppath 'fld_clu' num2str(r) '_merge_mm_dm.nc'],varn{ii});
+        moddat=ncread([exppath 'fld_' regnames{r} '_merge_mm_dm.nc'],varn{ii});
         %      if length(moddat) > 120
         if length(moddat) > nmonths
             display(['Too much data for ', expname, ' variable ', varf{ii}])

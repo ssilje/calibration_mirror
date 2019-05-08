@@ -1,5 +1,5 @@
 function [metamodel intcontout nointp]=neelin_e_analytic(parameters, datamatrix, nl)
-
+%nl=iv;
 % Quadratic regression metamodel as described in Neelin et al. (2010) PNAS
 % NAME 
 %   neelin_f
@@ -183,7 +183,7 @@ for i=1:nd % Estimate metamodel for each datapoint
     for n=1:di % Loop over all possible combinations of pairs
       i1=pqn(n,1); i2=pqn(n,2); 
        
-      %ne=n+2*N; % Indices of parameters for interactions. This is what Omar used, but with this indexing, ... 
+      ne_orig(n)=n+2*N; % Indices of parameters for interactions. This is what Omar used, but with this indexing, ... 
        % an interaction term from each parameter is not included, but only
        % the interactions with the first parameter
        % I got Nans (since the indexing gave some parameter interaction where it was zero)
@@ -191,6 +191,7 @@ for i=1:nd % Estimate metamodel for each datapoint
        %Below you can chose which parameter combination you will include. I
        %have used the max/max
        
+       ne_save(n)=2*N+(n-1)*4+4; % Maximum / Maximum
       ne=2*N+(n-1)*4+4; % Maximum / Maximum
       % ne=2*N+(n-1)*4+1;% Minimum / Minimum
       %ne=2*N+(n-1)*4+2;% Minimum / Maximum  

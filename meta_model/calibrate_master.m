@@ -59,8 +59,15 @@ iv=iv_n; stdobs=stdobs_n; err=err_n;
 
 
 % If only the last five years are used in the calibration
+% Only using clusters {'clu3','clu4','clu5','clu6','clu8', 'clu9', 'clu11'};
+if nregions<11
+    
+iv=iv(nyearstart:nyearend,:,[3 4 5 6 8 9 11],:); stdobs=stdobs(nyearstart:nyearend,:,[3 4 5 6 8 9 11],:); err=err(nyearstart:nyearend,:,[3 4 5 6 8 9 11],:);
+else
+    iv=iv(nyearstart:nyearend,:,:,:); stdobs=stdobs(nyearstart:nyearend,:,:,:); err=err(nyearstart:nyearend,:,:,:);
+end
+    
 
-iv=iv(nyearstart:nyearend,:,:,:); stdobs=stdobs(nyearstart:nyearend,:,:,:); err=err(nyearstart:nyearend,:,:,:);
 
 stddata=sqrt(err.^2+iv.^2+stdobs.^2);
 
@@ -110,12 +117,12 @@ else
         
         % (1) Method Neelin to estimate MetaModel
         
-       % metamodel=neelin_e_analytic(parameters,datamatrix,iv);
+        metamodel=neelin_e_analytic(parameters,datamatrix,iv);
         
         % (2) Method CALMO to estimate MetaModel
         %
         
-        metamodel=neelin_e(parameters,datamatrix,iv);
+       % metamodel=neelin_e(parameters,datamatrix,iv);
         
         %-----------------------------------------------------------------
         % VALIDATION METRICS
@@ -155,7 +162,7 @@ else
         % (1) Find optimal model parameters using a latin hypercube
         % optimisation
         
-        %lhacc=3000000; % what used for calibration. The lower number is
+       % lhacc=3000000; % what used for calibration. The lower number is
         %for tests
         lhacc=30000;
         % Number of experiments to sample parameter space, for
