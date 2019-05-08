@@ -106,12 +106,12 @@ datamatrix.variables={4,'T2M [K]','PR [mm/day]','CLCT [%]'};
 
 % (1) Method Neelin to estimate MetaModel
 
-%metamodel=neelin_e_analytic(parameters,datamatrix,iv);
+metamodel=neelin_e_analytic(parameters,datamatrix,iv);
 
 % (2) Method CALMO to estimate MetaModel
 %
 
- metamodel=neelin_e(parameters,datamatrix,iv);
+% metamodel=neelin_e(parameters,datamatrix,iv);
 
 %-----------------------------------------------------------------
 % VALIDATION METRICS
