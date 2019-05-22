@@ -63,7 +63,7 @@ iv=iv_n; stdobs=stdobs_n; err=err_n;
 if nregions<11
 
     disp('which regions are you using')
-iv=iv(nyearstart:nyearend,:,[3 4 5 6 8 9 11],:); stdobs=stdobs(nyearstart:nyearend,:,[3 4 5 6 8 9 11],:); err=err(nyearstart:nyearend,:,[3 4 5 6 8 9 11],:);
+iv=iv(nyearstart:nyearend,:,index_regions,:); stdobs=stdobs(nyearstart:nyearend,:,index_regions,:); err=err(nyearstart:nyearend,:,index_regions,:);
 
 else
     iv=iv(nyearstart:nyearend,:,:,:); stdobs=stdobs(nyearstart:nyearend,:,:,:); err=err(nyearstart:nyearend,:,:,:);
@@ -119,12 +119,12 @@ else
         
         % (1) Method Neelin to estimate MetaModel
         
-        %metamodel=neelin_e_analytic(parameters,datamatrix,iv);
+        metamodel=neelin_e_analytic(parameters,datamatrix,iv);
         
         % (2) Method CALMO to estimate MetaModel
         %
         
-        metamodel=neelin_e(parameters,datamatrix,iv);
+        %metamodel=neelin_e(parameters,datamatrix,iv);
         
         %-----------------------------------------------------------------
         % VALIDATION METRICS
@@ -138,6 +138,7 @@ else
         %%
         
         % [errstd]=errmeta(metamodel,parameters,datamatrix);
+        % [errstd]=errmeta_bias(metamodel,parameters,datamatrix);
         
         %% (2) Visualize mean metamodel parameters for linear, quadratic and
         %%     interaction terms

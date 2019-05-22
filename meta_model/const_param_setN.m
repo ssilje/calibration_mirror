@@ -33,7 +33,10 @@ nyearend=5;
 
 %index_param=[3 5 7]; % 3param
 %index_param=[2 3 5 6 7 9]; % 4param
-index_param=[2 3 5 6 7 9]; % 4param
+index_param=[2 3 5 6 7 9]; % 6param
+%index_param=[2 3 5 6 7]; % 5param
+%index_param=[2 3 5 7]; % 4param
+%index_param=[3 5 7]; % 3param
 nparam=length(index_param); %number of parameters
 %index_param=[2 3 5 6 7]; % 5param
 % 1:d_mom --> ref outside range
@@ -50,9 +53,13 @@ nparam=length(index_param); %number of parameters
 nsim=2*nparam*nparam; %number of simulations
 nind=3; % number of independent simulations
 
-nregions=11;
-regnames={'clu1','clu2','clu3','clu4','clu5','clu6','clu7','clu8', 'clu9', 'clu10', 'clu11'};
+%nregions=11;
+%regnames={'clu1','clu2','clu3','clu4','clu5','clu6','clu7','clu8', 'clu9', 'clu10', 'clu11'};
 
+nregions=8;
+regnames={'clu1','clu2','clu5','clu7','clu8', 'clu9', 'clu10', 'clu11'};
+index_regions=[1 2 5 7 8 9 10 11];
+% 4 6  3
 % Default parameters
 rlam_heat=1.0;
 v0snow=25;
@@ -108,10 +115,10 @@ range_all={[d_momn d_momx];
 %     12.1954 log(0.79509) 0.5967 10.0843 0.3557 log(0.86866) 0.8377 0.0000 log(0.88577);  %IND5
 %     12.0491 log(0.79509) 0.6289 11.4301 0.3146 log(0.360811) 0.8273 0.000 log(0.514325)];  %IND6
 
-valdata_all=[12.0617 log(1.2264) 0.3454 10.8446 0.3355 log(2.32798) 0.5545 0.0000 log(0.94356); %IND4
-    12.1954 log(0.79509) 0.5967 10.0843 0.3557 log(0.86866) 0.8377 0.0000 log(0.88577);  %IND5
-    12.0491 log(0.79509) 0.6289 11.4301 0.3146 log(0.360811) 0.8273 0.000 log(0.514325)];  %IND6
-
+ valdata_all=[12.0617 log(1.2264) 0.3454 10.8446 0.3355 log(2.32798) 0.5545 0.0000 log(0.94356); %IND4
+     12.1954 log(0.79509) 0.5967 10.0843 0.3557 log(0.86866) 0.8377 0.0000 log(0.88577);  %IND5
+     12.0491 log(0.79509) 0.6289 11.4301 0.3146 log(0.360811) 0.8273 0.000 log(0.514325)];  %IND6
+% 
 expid=expid_all(index_param);
 paramn=paramn_all(index_param);
 paramnt=paramnt_all(index_param);
