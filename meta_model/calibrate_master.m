@@ -38,10 +38,10 @@ addpath('PolyfitnTools')
 %optrun=true; % only set this to true if you are running after having the OPT run
 optrun=false; % only set this to true if you are running after having the OPT run
 %OPT_matfile='/hymet/ssilje/cosmopompa_calibration/meta_model/data/opt_5.mat';
-OPT_matfile='calibration_OPT_neelin_e_6param';
+OPT_matfile='calibration_OPT_neelin_e_6param_all_clusters';
 % If you want to run the calibration several times to get differnet
 % sets of OPT parameters
-ntimes_opt=1; % number of times to run the calibration
+ntimes_opt=2; % number of times to run the calibration
 
 % file with constants for the simlations. Needs to be set depending on
 % the experiemntal design
@@ -119,12 +119,12 @@ else
         
         % (1) Method Neelin to estimate MetaModel
         
-        metamodel=neelin_e_analytic(parameters,datamatrix,iv);
+       % metamodel=neelin_e_analytic(parameters,datamatrix,iv);
         
         % (2) Method CALMO to estimate MetaModel
         %
         
-        %metamodel=neelin_e(parameters,datamatrix,iv);
+        metamodel=neelin_e(parameters,datamatrix,iv);
         
         %-----------------------------------------------------------------
         % VALIDATION METRICS
@@ -165,9 +165,9 @@ else
         % (1) Find optimal model parameters using a latin hypercube
         % optimisation
         
-       % lhacc=3000000; % what used for calibration. The lower number is
+        lhacc=3000000; % what used for calibration. The lower number is
         %for tests
-        lhacc=30000;
+        %lhacc=30000;
         % Number of experiments to sample parameter space, for
         % means of speed a low number of parameter combinations
         % is used.

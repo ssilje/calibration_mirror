@@ -51,14 +51,19 @@ nparam=length(index_param); %number of parameters
 
 
 nsim=2*nparam*nparam; %number of simulations
-nind=3; % number of independent simulations
+nind=6; % number of independent simulations
 
-%nregions=11;
-%regnames={'clu1','clu2','clu3','clu4','clu5','clu6','clu7','clu8', 'clu9', 'clu10', 'clu11'};
+nregions=11;
+regnames={'clu1','clu2','clu3','clu4','clu5','clu6','clu7','clu8', 'clu9', 'clu10', 'clu11'};
+% 
+% nregions=8;
+% regnames={'clu1','clu2','clu5','clu7','clu8', 'clu9', 'clu10', 'clu11'};
+% index_regions=[1 2 5 7 8 9 10 11];
 
-nregions=8;
-regnames={'clu1','clu2','clu5','clu7','clu8', 'clu9', 'clu10', 'clu11'};
-index_regions=[1 2 5 7 8 9 10 11];
+% nregions=3;
+% regnames={'clu5','clu7' 'clu10'};
+% index_regions=[5 7 10];
+
 % 4 6  3
 % Default parameters
 rlam_heat=1.0;
@@ -115,9 +120,17 @@ range_all={[d_momn d_momx];
 %     12.1954 log(0.79509) 0.5967 10.0843 0.3557 log(0.86866) 0.8377 0.0000 log(0.88577);  %IND5
 %     12.0491 log(0.79509) 0.6289 11.4301 0.3146 log(0.360811) 0.8273 0.000 log(0.514325)];  %IND6
 
- valdata_all=[12.0617 log(1.2264) 0.3454 10.8446 0.3355 log(2.32798) 0.5545 0.0000 log(0.94356); %IND4
-     12.1954 log(0.79509) 0.5967 10.0843 0.3557 log(0.86866) 0.8377 0.0000 log(0.88577);  %IND5
-     12.0491 log(0.79509) 0.6289 11.4301 0.3146 log(0.360811) 0.8273 0.000 log(0.514325)];  %IND6
+%  valdata_all=[12.0617 log(1.2264) 0.3454 10.8446 0.3355 log(2.32798) 0.5545 0.0000 log(0.94356); %IND1
+%      12.1954 log(0.79509) 0.5967 10.0843 0.3557 log(0.86866) 0.8377 0.0000 log(0.88577);  %IND2
+%      12.0491 log(0.79509) 0.6289 11.4301 0.3146 log(0.360811) 0.8273 0.000 log(0.514325)];  %IND3
+ 
+  valdata_all=[12.0617 log(1.2264) 0.3454 10.8446 0.3355 log(2.32798) 0.5545 0.0000 log(0.94356); %IND1
+     12.1954 log(0.79509) 0.5967 10.0843 0.3557 log(0.86866) 0.8377 0.0000 log(0.88577);  %IND2
+     12.0491 log(0.79509) 0.6289 11.4301 0.3146 log(0.360811) 0.8273 0.000 log(0.514325) %IND3
+     3.2188 log(4.2212) 1.6346 13.7661 0.4749 log(0.3169) 1.2902 0.0000 log(3.0281); %IND4
+     13.9604 log(2.3665) 1.7370 10.4912 0.3222 log(2.5761) 1.3508 0.0000 log(0.5657); %IND5
+     12.5804 log(0.5954) 0.1231 14.9506 0.8710 log(0.2903) 0.8493 0.0001 log(6.6516);];%IND6  
+ 
 % 
 expid=expid_all(index_param);
 paramn=paramn_all(index_param);
