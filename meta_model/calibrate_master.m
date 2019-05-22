@@ -38,7 +38,7 @@ addpath('PolyfitnTools')
 %optrun=true; % only set this to true if you are running after having the OPT run
 optrun=false; % only set this to true if you are running after having the OPT run
 %OPT_matfile='/hymet/ssilje/cosmopompa_calibration/meta_model/data/opt_5.mat';
-OPT_matfile='calibration_OPT_neelin_e_8param';
+OPT_matfile='calibration_OPT_neelin_e_6param';
 % If you want to run the calibration several times to get differnet
 % sets of OPT parameters
 ntimes_opt=1; % number of times to run the calibration
@@ -61,8 +61,10 @@ iv=iv_n; stdobs=stdobs_n; err=err_n;
 % If only the last five years are used in the calibration
 % Only using clusters {'clu3','clu4','clu5','clu6','clu8', 'clu9', 'clu11'};
 if nregions<11
-    
+
+    disp('which regions are you using')
 iv=iv(nyearstart:nyearend,:,[3 4 5 6 8 9 11],:); stdobs=stdobs(nyearstart:nyearend,:,[3 4 5 6 8 9 11],:); err=err(nyearstart:nyearend,:,[3 4 5 6 8 9 11],:);
+
 else
     iv=iv(nyearstart:nyearend,:,:,:); stdobs=stdobs(nyearstart:nyearend,:,:,:); err=err(nyearstart:nyearend,:,:,:);
 end
@@ -117,12 +119,12 @@ else
         
         % (1) Method Neelin to estimate MetaModel
         
-        metamodel=neelin_e_analytic(parameters,datamatrix,iv);
+        %metamodel=neelin_e_analytic(parameters,datamatrix,iv);
         
         % (2) Method CALMO to estimate MetaModel
         %
         
-       % metamodel=neelin_e(parameters,datamatrix,iv);
+        metamodel=neelin_e(parameters,datamatrix,iv);
         
         %-----------------------------------------------------------------
         % VALIDATION METRICS

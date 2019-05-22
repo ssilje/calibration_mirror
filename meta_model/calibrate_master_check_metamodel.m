@@ -58,8 +58,8 @@ load('stddata_2000-2004_CA.mat');
 iv=iv_n; stdobs=stdobs_n; err=err_n; % dim [year month regions variables]
 % Only using clusters {'clu3','clu4','clu5','clu6','clu8', 'clu9', 'clu11'};
 if nregions<11
-    
-iv=iv(nyearstart:nyearend,:,[3 4 5 6 8 9 11],:); stdobs=stdobs(nyearstart:nyearend,:,[3 4 5 6 8 9 11],:); err=err(nyearstart:nyearend,:,[3 4 5 6 8 9 11],:);
+    iv=iv(nyearstart:nyearend,:,index_param,:); stdobs=stdobs(nyearstart:nyearend,:,index_param,:); err=err(nyearstart:nyearend,:,index_param,:);
+
 else
     iv=iv(nyearstart:nyearend,:,:,:); stdobs=stdobs(nyearstart:nyearend,:,:,:); err=err(nyearstart:nyearend,:,:,:);
 end
@@ -106,12 +106,12 @@ datamatrix.variables={4,'T2M [K]','PR [mm/day]','CLCT [%]'};
 
 % (1) Method Neelin to estimate MetaModel
 
-metamodel=neelin_e_analytic(parameters,datamatrix,iv);
+%metamodel=neelin_e_analytic(parameters,datamatrix,iv);
 
 % (2) Method CALMO to estimate MetaModel
 %
 
-% metamodel=neelin_e(parameters,datamatrix,iv);
+ metamodel=neelin_e(parameters,datamatrix,iv);
 
 %-----------------------------------------------------------------
 % VALIDATION METRICS

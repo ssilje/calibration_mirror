@@ -30,9 +30,11 @@ nyear=5;
 nmonths=nyear*12;
 nyearstart=1;
 nyearend=5;
-nparam=3; %number of parameters
-index_param=[3 5 7]; % 3param
-%index_param=[2 3 5 7]; % 4param
+
+%index_param=[3 5 7]; % 3param
+%index_param=[2 3 5 6 7 9]; % 4param
+index_param=[2 3 5 6 7 9]; % 4param
+nparam=length(index_param); %number of parameters
 %index_param=[2 3 5 6 7]; % 5param
 % 1:d_mom --> ref outside range
 % 2:log(rlam_heat)
@@ -99,9 +101,16 @@ range_all={[d_momn d_momx];
     [qi0x qi0n];
     [log(e_surfn) log(e_surfx)];};
 
-valdata_all=[3.2188 log(4.2212) 1.6346 13.7661 0.4749 log(0.3169) 1.2902 0.0000 log(3.0281); % IND1
-    13.9604 log(2.3665) 1.7370 10.4912 0.3222 log(2.5761) 1.3508 0.0000 log(0.5657); %IND2
-    12.5804 log(0.5954) 0.1231 14.9506 0.8710 log(0.2903) 0.8493 0.0001 log(6.6516)]; %IND3
+% valdata_all=[3.2188 log(4.2212) 1.6346 13.7661 0.4749 log(0.3169) 1.2902 0.0000 log(3.0281); % IND1
+%     13.9604 log(2.3665) 1.7370 10.4912 0.3222 log(2.5761) 1.3508 0.0000 log(0.5657); %IND2
+%     12.5804 log(0.5954) 0.1231 14.9506 0.8710 log(0.2903) 0.8493 0.0001 log(6.6516); %IND3
+%     12.0617 log(1.2264) 0.3454 10.8446 0.3355 log(2.32798) 0.5545 0.0000 log(0.94356); %IND4
+%     12.1954 log(0.79509) 0.5967 10.0843 0.3557 log(0.86866) 0.8377 0.0000 log(0.88577);  %IND5
+%     12.0491 log(0.79509) 0.6289 11.4301 0.3146 log(0.360811) 0.8273 0.000 log(0.514325)];  %IND6
+
+valdata_all=[12.0617 log(1.2264) 0.3454 10.8446 0.3355 log(2.32798) 0.5545 0.0000 log(0.94356); %IND4
+    12.1954 log(0.79509) 0.5967 10.0843 0.3557 log(0.86866) 0.8377 0.0000 log(0.88577);  %IND5
+    12.0491 log(0.79509) 0.6289 11.4301 0.3146 log(0.360811) 0.8273 0.000 log(0.514325)];  %IND6
 
 expid=expid_all(index_param);
 paramn=paramn_all(index_param);
